@@ -40,6 +40,7 @@ module.exports = {
     module: {
         // 模块规则（配置loader、解析器等选项）
         rules: [
+            // js
             {
                 // 这里是匹配条件，每个选项都接收一个正则表达式或字符串
                 // test和include具有相同的作用，都是鼻血匹配选项
@@ -63,6 +64,7 @@ module.exports = {
                 }
             },
 
+            // html
             {
                 test: /\.html$/,
                 // 应用多个 loader 和选项
@@ -77,6 +79,8 @@ module.exports = {
                     }
                 ]
             },
+
+            // css
             {test: /\.css$/, use: 'css-loader'}
         ],
 
@@ -123,5 +127,12 @@ module.exports = {
                 }
             }
         }
+    }, 
+
+    // dev server
+    devServer: {
+        contentBase: path.join(__dirname, 'dist'), 
+        compress: true, 
+        port: 9000
     }
 };
