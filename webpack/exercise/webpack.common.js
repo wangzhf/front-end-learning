@@ -1,10 +1,12 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
+const webpack = require('webpack');
 
 module.exports = {
     entry: {
-        app: './src/index.js'
+        index: './src/index.js',
+        another: './src/another-module.js'
     },
 
     output: {
@@ -14,7 +16,21 @@ module.exports = {
     plugins: [
         new CleanWebpackPlugin(['dist']),
         new HtmlWebpackPlugin({
-            title: 'Production'
+            title: 'Code Spliting'
         })
-    ]
+    ], 
+
+    optimization: {
+        splitChunks: {
+            cacheGroups: {
+                commons: {
+                    //test: /[\\/]node_modules[\\/]/,
+                    // 指定名字
+                    name: 'common',
+                    chunks: 'all',
+                    minChunks: 2
+                }
+            }
+        }
+    }
 }
