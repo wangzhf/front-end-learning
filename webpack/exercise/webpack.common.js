@@ -1,16 +1,16 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
-const webpack = require('webpack');
 
 module.exports = {
     entry: {
-        index: './src/index.js',
-        another: './src/another-module.js'
+        index: './src/index.js'
     },
 
     output: {
         filename: '[name].bundle.js',
+        // 决定非入口chunk的名称
+        chunkFilename: '[name].bundle.js',
         path: path.resolve(__dirname, 'dist')
     },
     plugins: [
@@ -18,19 +18,5 @@ module.exports = {
         new HtmlWebpackPlugin({
             title: 'Code Spliting'
         })
-    ], 
-
-    optimization: {
-        splitChunks: {
-            cacheGroups: {
-                commons: {
-                    //test: /[\\/]node_modules[\\/]/,
-                    // 指定名字
-                    name: 'common',
-                    chunks: 'all',
-                    minChunks: 2
-                }
-            }
-        }
-    }
+    ]
 }
