@@ -6,203 +6,152 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Vue Component Demo</title>
     <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/axios@0.12.0/dist/axios.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/lodash@4.13.1/lodash.min.js"></script>
 
 </head>
 <body>
     
     <div id="app">
-        <ol>
-            <todo-item v-for="item in groceryList"
-                        v-bind:todo="item"
-                        v-bind:key="item.id"></todo-item>
-        </ol>
+        <button-counter></button-counter>
+        <button-counter></button-counter>
+        <button-counter></button-counter>
     </div>
 
     <div id="app-2">
-        <p>{{ foo }}</p>
-        <button v-on:click="foo == 'baz'">change it</button>
+        <blog-post title="My journey with vue"></blog-post>
+        <blog-post title="Blogging with vue"></blog-post>
+        <blog-post title="Why Vue is so fun"></blog-post>
+        <blog-post v-for="post in posts"
+                    v-bind:key="post.id"
+                    v-bind:title="post.title"></blog-post>
     </div>
 
-    <!-- computed -->
+    <!-- 传入对象 -->
     <div id="app-3">
-        <p>Original message: "{{ message }}"</p>
-        <p>Computed reversed message: "{{ reverseMessage }}"</p>
+        <blog-post2
+                v-for="post in posts"
+                v-bind:key="post.id"
+                v-bind:post="post"
+        ></blog-post2>
     </div>
 
-    <!-- methods -->
+    <!-- 绑定事件 -->
     <div id="app-4">
-        <p>Reversed Message: "{{ reverseMessage() }}"</p>
+        <div :style="{fontSize: postFontSize + 'em'}">
+            <blog-post-event
+                v-for="post in posts"
+                v-bind:key="post.id"
+                v-bind:post="post"
+                v-on:enlarge-text="postFontSize += $event"></blog-post-event>
+        </div>
     </div>
 
-    <!-- computed vs watch -->
+    <!-- custom input -->
     <div id="app-5">
-        <div id="demo">{{ fullName }}</div>
+        <custom-input
+                v-model="searchText"></custom-input>
     </div>
-    <!-- use computed not watch -->
+    <br>
+
+    <!-- slot -->
     <div id="app-6">
-        <div id="demo6">{{ fullName }}</div>
+        <alert-box>{{ errmsg }}</alert-box>
     </div>
-
-    <!-- the getter and setter attr of computed -->
-    <div id="app-7">
-        <p>{{ fullName }}</p>
-    </div>
-
-    <!-- watch -->
-    <div id="app-8">
-        <p>
-            Ask a yes/no question:
-            <input type="text" v-model="question">
-        </p>
-        <p>{{ answer }}</p>
-    </div>
+    
 <script>
-    Vue.component('todo-item', {
-        props: ['todo'],
-        template: '<li>{{ todo.text }}</li>'
+    Vue.component('button-counter', {
+        data: function(){
+            return {count: 0};
+        }, 
+        template: '<button v-on:click="count++">You clicked me {{ count }} times.</button>'
     });
-    var app = new Vue({
-        el: '#app', 
+    new Vue({el: '#app'});
+
+    Vue.component('blog-post', {
+        props: ['title'],
+        template: '<h3>{{ title }}</h3>'
+    });
+    new Vue({
+        el: '#app-2', 
         data: {
-            groceryList: [
-                {id: 0, text: 'js'}, 
-                {id: 1, text: 'node'}, 
-                {id: 2, text: 'vue'}
+            posts: [
+                {id: 1, title: 'Javascript'}, 
+                {id: 2, title: 'Vue'}
             ]
         }
     });
 
-    var obj = {foo: 'bar'};
-    // 会阻止修改现有的属性，也意味着响应系统无法再追踪变化。
-    Object.freeze(obj);
-    new Vue({
-        el: '#app-2', 
-        data: obj
+    // 传入对象
+    Vue.component('blog-post2', {
+        props: ['post'], 
+        template: '<div class="blog-post">\
+                    <h3>{{ post.title }}</h3>\
+                    <div v-html="post.content"></div>\
+                </div>'
     });
-
-    var app3 = new Vue({
+    new Vue({
         el: '#app-3', 
         data: {
-            message: 'Hello'
-        }, 
-        computed: {
-            reverseMessage: function(){
-                console.log('computed function worked.');
-                return this.message.split('').reverse().join('');
-            }
+            posts: [
+                {id: 1, title: 'javascript'}, 
+                {id: 2, title: 'vue'}
+            ]
         }
     });
 
-    var app4 = new Vue({
+    // 事件
+    Vue.component('blog-post-event', {
+        props: ['post'], 
+        template: `
+            <div class="blog-post">
+                <h3>{{ post.title }}</h3>
+                <button v-on:click="$emit('enlarge-text', 0.1)">
+                    Enlarge text
+                </button>
+                <div v-html="post.content"></div>
+            </div>
+        `
+    });
+    new Vue({
         el: '#app-4', 
         data: {
-            message: 'Hello Vue'
-        }, 
-        methods: {
-            reverseMessage: function(){
-                console.log('methods funciton worked.');
-                return this.message.split('').reverse().join('');
-            }
+            postFontSize: 1,
+            posts: [
+                {id: 1, title: 'learning javascript '}, 
+                {id: 2, title: 'learning vue'}
+            ]
         }
     });
 
-    var app5 = new Vue({
+    Vue.component('custom-input', {
+        props: ['value'], 
+        template: `
+            <input 
+                    v-bind:value="value"
+                    v-on:input="$emit('input', $event.target.value)">
+        `
+    });
+    new Vue({
         el: '#app-5', 
         data: {
-            firstName: 'Foo', 
-            lastName: 'Bar', 
-            fullName: 'Foo Bar'
-        }, 
-        // 下面代码是命令式且重复的，通常更好的做法是使用计算属性而不是命令式的 watch 回调
-        watch: {
-            firstName: function(val) {
-                this.fullName = val + ' ' + this.lastName;
-            }, 
-            lastName: function(val){
-                this.fullName = this.firstName + ' ' + val;
-            }
+            searchText: 'sds'
         }
     });
-    var app6 = new Vue({
+
+    Vue.component('alert-box', {
+        template: `
+            <div>
+                <strong>Error!</strong>
+                <slot></slot>
+            </div>
+        `
+    });
+    new Vue({
         el: '#app-6', 
         data: {
-            firstName: 'Foo', 
-            lastName: 'bar'
-        }, 
-        computed: {
-            fullName: function(){
-                return this.firstName + ' ' + this.lastName;
-            }
+            errmsg: 'Something error!'
         }
     });
 
-    // 默认情况下，computed只有getter属性，不过可以在需要时提供一个setter
-    var app7 = new Vue({
-        el: '#app-7', 
-        data: {
-            firstName: 'Foo', 
-            lastName: 'Bar'
-        }, 
-        computed: {
-            fullName: {
-                get: function(){
-                    return this.firstName + ' ' + this.lastName;
-                }, 
-                set: function(newVal) {
-                    var names = newVal.split(' ');
-                    this.firstName = names[0];
-                    this.lastName = names[names.length - 1];
-                }
-            }
-        }
-    });
-
-    // 虽然计算属性在大多数情况下更合适，但有时也需要一个自定义的侦听器。
-    // 这就是为什么 Vue 通过 watch 选项提供了一个更通用的方法，来响应数据的变化。
-    // 当需要在数据变化时执行异步或开销较大的操作时，这个方式是最有用的。
-    var app8 = new Vue({
-        el: '#app-8', 
-        data: {
-            question: '', 
-            answer: 'I cannot give you an answer until you ask a question: '
-        }, 
-        watch: {
-            // 如果 `question` 发生改变，这个函数就会运行
-            question: function(newQuestion, oldQuestion){
-                console.log('new: ' + newQuestion);
-                console.log('old: ' + oldQuestion);
-                this.answer = 'waiting for you to stop typing ...';
-                this.debounceGetAnswer();
-            }
-        }, 
-        created: function(){
-            // `_.debounce` 是一个通过 Lodash 限制操作频率的函数。 
-            // 在这个例子中，我们希望限制访问 yesno.wtf/api 的频率 
-            // AJAX 请求直到用户输入完毕才会发出。想要了解更多关于 
-            // `_.debounce`函数 (及其近亲 `_.throttle`) 的知识， 
-            // 请参考：https://lodash.com/docs#debounce
-            this.debounceGetAnswer = _.debounce(this.getAnswer, 500);
-        }, 
-        methods: {
-            getAnswer: function(){
-                if(this.question.indexOf('?') === -1) {
-                    this.answer = 'Question usually contain a question mark.';
-                    return ;
-                }
-                this.answer = 'Thinking...';
-                var vm = this;
-                axios.get('https://yesno.wtf/api')
-                    .then(function(response){
-                        vm.answer = _.capitalize(response.data.answer);
-                    })
-                    .catch(function(error){
-                        vm.answer = 'Error! Could not reach the API.' + error;
-                    });
-            }
-        }
-    });
 </script>
 </body>
 </html>

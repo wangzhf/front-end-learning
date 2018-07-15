@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Form bind </title>
+<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+</head>
+<body>
+    
+    <div id="app-1">
+        <input type="text" v-model="message" placeholder="edit me">
+        <p>Message is: {{ message }}</p><br>
+        <span>Multiline message is: </span>
+        <p style="white-space: pre-line;">{{ message }}</p>
+        <br>
+        <textarea v-model="message" placeholder="add multiple lines"></textarea>
+    </div>
+
+    <!-- checkbox -->
+    <div id="app-2">
+        <input type="checkbox" id="jack" value="jack" v-model="checkedNames">
+        <label for="jack">Jack</label>
+        <input type="checkbox" id="john" value="john" v-model="checkedNames">
+        <label for="john">john</label>
+        <input type="checkbox" id="mike" value="mike" v-model="checkedNames">
+        <label for="mike">mike</label>
+        <br>
+        <span>Checked names: {{ checkedNames }}</span>
+    </div>
+
+    <!-- radio -->
+    <div id="app-3">
+        <input type="radio" id="one" value="one" v-model="picked">
+        <label for="one">One</label>
+        <input type="radio" id="two" value="two" v-model="picked">
+        <label for="two">two</label><br>
+        <span>picked: {{ picked }}</span>
+    </div>
+
+    <!-- selected -->
+    <div id="app-4">
+        <select v-model="selected">
+            <option disabled value="">please select</option>
+            <option value="A">A</option>
+            <option value="B">B</option>
+            <option value="C">C</option>
+        </select>
+        <br>
+        <span>Selected: {{ selected }}</span>
+    </div>
+
+    <!-- v-for -->
+    <div id="app-5">
+        <select v-model="selected">
+            <option v-for="option in options" v-bind:value="option.value">
+                {{ option.text }}
+            </option>
+        </select>
+        <br>
+        <span>Selected: {{ selected }}</span>
+    </div>
+
+<script>
+    var app1 = new Vue({
+        el: '#app-1', 
+        data: {
+            message: '123'
+        }
+    });
+
+    var app2 = new Vue({
+        el: '#app-2', 
+        data: {
+            checkedNames: ['john']
+        }
+    });
+
+    var app3 = new Vue({
+        el: '#app-3', 
+        data: {
+            picked: 'two'
+        }
+    });
+
+    var app4 = new Vue({
+        el: '#app-4', 
+        data: {
+            selected: 'B'
+        }
+    });
+
+    var app5 = new Vue({
+        el: '#app-5', 
+        data: {
+            selected: 'B', 
+            options: [
+                {text: 'One', value: 'A'}, 
+                {text: 'Two', value: 'B'}, 
+                {text: 'Three', value: 'C'}
+            ]
+        }
+    });
+
+</script>
+
+</body>
+</html>
