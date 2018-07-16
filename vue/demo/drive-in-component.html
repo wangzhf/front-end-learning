@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Vue Component Demo</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+
+</head>
+<body>
+    
+    <!-- 全局注册组件 -->
+    <div id="app">
+        <component-a></component-a>
+        <component-b></component-b>
+        <component-c></component-c>
+    </div>
+
+    <!-- 普通注册 -->
+    <div id="app-2">
+        <common-component-a></common-component-a>
+        <common-component-b></common-component-b>
+        <common-component-c></common-component-c>
+    </div>
+
+    <hr>
+
+    <!---->
+    <div id="app-3">
+        <common-component-a>
+            <common-component-b></common-component-b>
+        </common-component-a>
+    </div>
+
+    <hr>
+
+    <!-- 使用嵌套形式，组件a在组件b的template里-->
+    <div id="app-4">
+        <nest-component-b>
+        </nest-component-b>
+    </div>
+    
+<script>
+    // 全局注册组件
+    Vue.component('component-a', {
+        template: '<div>Component A</div>'
+    });
+    Vue.component('component-b', {
+        template: '<div>Component B</div>'
+    });
+    Vue.component('component-c', {
+        template: '<div>Component C</div>'
+    });
+    new Vue({
+        el: '#app'
+    });
+
+    // 普通注册
+    var CommonComponentA = {
+        template: '<div>Common Component A</div>'
+    };
+    var CommonComponentB = {
+        template: '<div>Common Component B</div>'
+    };
+    var CommonComponentC = {
+        template: '<div>Common Component C</div>'
+    };
+    new Vue({
+        el: '#app-2', 
+        components: {
+            'common-component-a': CommonComponentA, 
+            'common-component-b': CommonComponentB,
+            'common-component-c': CommonComponentC
+        }
+    });
+
+    // 组件嵌套使用，此配置时，组件B无法显示
+    new Vue({
+        el: '#app-3', 
+        components: {
+            'common-component-a': CommonComponentA, 
+            'common-component-b': CommonComponentB
+        }
+    });
+
+    var NestComponentB = {
+        template: '<div><label>Nest component B</label><nest-component-a></nest-component-a></div>', 
+        components: {
+            'nest-component-a': CommonComponentA
+        }
+    };
+    new Vue({
+        el: '#app-4', 
+        components: {
+            'nest-component-b': NestComponentB
+        }
+    });
+
+</script>
+</body>
+</html>
