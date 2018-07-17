@@ -44,7 +44,7 @@
     <!-- 更新对象 -->
     <div id="app-6">
         <obj-text-document
-                v-bind:doc="doc"
+                v-bind.sync="doc"
         ></obj-text-document>
     </div>
 <script>
@@ -198,10 +198,11 @@
     });
 
     Vue.component('obj-text-document', {
-        props: ['doc'], 
+        // 如果是对象，还需要接收具体的属性名
+        props: ['doc', 'title'], 
         template: `
             <div>
-                <label>{{ doc.title }}</label>
+                <label>{{ title }}</label>
                 <span>This is a Vue.</span>
                 <input v-model="docTitle" >
             </div>
@@ -210,11 +211,11 @@
             docTitle: {
                 get: function(){
                     console.log(this.doc)
-                    return this.doc.title;
+                    return this.title;
                 }, 
                 set: function(newVal){
                     console.log(this.doc)
-                    this.$emit('update:doc.title', newVal);
+                    this.$emit('update:title', newVal);
                 }
             }
         }
