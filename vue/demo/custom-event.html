@@ -17,6 +17,36 @@
         <base-checkbox v-model="lovingVue"></base-checkbox>
     </div>
 
+    <div id="app-2">
+        <!-- .native 修饰符 表示在一个组件的根元素上监听一个原生事件 -->
+        <base-input label="Native Event: " v-on:click.native="onclickEvent($event)"></base-input>
+    </div>
+
+    <div id="app-3">
+        <a-base-input label="Event label: " v-on:focus.native="onFocus($event)"></a-base-input>
+    </div>
+
+    <!-- 实现prop 双向绑定 -->
+    <div id="app-4">
+        <text-document
+                v-bind:title="doc.title"
+                v-on:update:title="doc.title = $event"        
+        ></text-document>
+    </div>
+
+    <!-- 使用sync实现prop双向绑定 -->
+    <div id="app-5">
+        <text-document
+                v-bind:title.sync="doc.title"
+        ></text-document>
+    </div>
+
+    <!-- 更新对象 -->
+    <div id="app-6">
+        <obj-text-document
+                v-bind:doc="doc"
+        ></obj-text-document>
+    </div>
 <script>
     Vue.component('base-checkbox', {
         model: {
@@ -41,6 +71,158 @@
         el: '#app', 
         data: {
             lovingVue: true
+        }
+    });
+
+    // 
+    Vue.component('base-input', {
+        template: `
+            <label>
+                {{ label }}
+                <input 
+                    v-bind="$attrs"
+                    v-bind:value="value"
+                    v-on:input="$emit('input', $event.target.value)">
+            </label>
+        `, 
+        props: ['label', 'value']
+    });
+    new Vue({
+        el: '#app-2', 
+        data: {
+            label: 'This is vue.',
+            value: ''
+        }, 
+        methods: {
+            onclickEvent: function(e){
+                console.log(e.target);
+                e.preventDefault(); // 阻止事件传播
+            }
+        }
+    });
+
+
+    // 
+    Vue.component('a-base-input', {
+        inheritAttrs: false, 
+        props: ['label', 'value'], 
+        computed: {
+            inputListeners: function(){
+                var vm = this;
+                // console.log(vm.$listeners)
+                // `Object.assign` 将所有的对象合并为一个新对象
+                return Object.assign({}, 
+                    // 我们从父级添加所有的监听器
+                    this.$listeners, 
+                    // 然后我们添加自定义监听器，
+                    // 或覆写一些监听器的行为
+                    {
+                        // 这里确保组件配合`v-model`的工作
+                        input: function(event){
+                            // input事件触发
+                            // console.log(event);
+                            vm.$emit('input', event.target.value);
+                        }
+                    }
+                );
+            }
+        }, 
+        template: `
+            <label>
+                {{ label }}
+                <input
+                    v-bind="$attrs"
+                    v-bind:value="value"
+                    v-on="inputListeners"
+                >
+            </label>
+        `
+    });
+    new Vue({
+        el: '#app-3', 
+        data: {
+            label: 'other vue input: '
+        },
+        methods: {
+            onFocus: function(event){
+                console.log(event);
+            }
+        }
+    });
+
+
+    // prop双向绑定
+    Vue.component('text-document', {
+        props: ['title'], 
+        // template: `
+        //     <div>
+        //         <label>{{ title }}</label>
+        //         <span>This is a Vue.</span>
+        //         <input v-model="title" v-on:input="$emit('update:title', $event.target.value)" >
+        //     </div>
+        // `
+        template: `
+            <div>
+                <label>{{ title }}</label>
+                <span>This is a Vue.</span>
+                <input v-model="docTitle" >
+            </div>
+        `, 
+        computed: {
+            docTitle: {
+                get: function(){
+                    return this.title;
+                }, 
+                set: function(newVal){
+                    this.$emit('update:title', newVal);
+                }
+            }
+        }
+    });
+    var app4 = new Vue({
+        el: '#app-4', 
+        data: {
+            doc: {
+                title: 'Vue Props'
+            }
+        }
+    });
+
+    var app5 = new Vue({
+        el: '#app-5', 
+        data: {
+            doc: {
+                title: 'Vue Props5'
+            }
+        }
+    });
+
+    Vue.component('obj-text-document', {
+        props: ['doc'], 
+        template: `
+            <div>
+                <label>{{ doc.title }}</label>
+                <span>This is a Vue.</span>
+                <input v-model="docTitle" >
+            </div>
+        `, 
+        computed: {
+            docTitle: {
+                get: function(){
+                    console.log(this.doc)
+                    return this.doc.title;
+                }, 
+                set: function(newVal){
+                    console.log(this.doc)
+                    this.$emit('update:doc.title', newVal);
+                }
+            }
+        }
+    });
+    var app6 = new Vue({
+        el: '#app-6', 
+        data: {
+            doc: {title: 'Vue props two-way bind', id: 1}
         }
     });
 
