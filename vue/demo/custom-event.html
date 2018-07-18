@@ -42,6 +42,7 @@
     </div>
 
     <!-- 更新对象 -->
+    <!-- 这样会把 doc 对象中的每一个属性 (如 title) 都作为一个独立的 prop 传进去，然后各自添加用于更新的 v-on 监听器。 -->
     <div id="app-6">
         <obj-text-document
                 v-bind.sync="doc"

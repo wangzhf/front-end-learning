@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Vue Slot Demo</title>
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+
+</head>
+<body>
+    
+    <div id="app">
+        <navigation-link url="/profile">
+            <span class="fa fa-user"></span>
+            Your Profile
+        </navigation-link>
+    </div>
+
+    <!-- 具名插槽 -->
+    <!--在向具名插槽提供内容的时候，我们可以在一个父组件的 <template> 元素上使用 slot 特性-->
+    <div id="app-1">
+        <base-layout>
+            <template slot="header">
+                <h1>Here might be a page title</h1>
+            </template>
+            <p>A paragraph for the main content.</p>
+            <p>And another one.</p>
+
+            <template slot="footer">
+                <p>Here's some contact info</p>
+            </template>
+        </base-layout>
+    </div>
+
+    <!--另一种 slot 特性的用法是直接用在一个普通的元素上-->
+    <div id="app-2">
+        <base-layout>
+            <h1 slot="header">Here Might be a page title.</h1>
+            <p>A paragraph for the main content.</p>
+            <p>And another one.</p>
+            <p slot="footer">Here's some contact info .</p>
+        </base-layout>
+    </div>
+
+    <!--有的时候为插槽提供默认的内容是很有用的。例如，一个 <submit-button> 组件可能希望这个按钮的默认内容是“Submit”，
+        但是同时允许用户覆写为“Save”、“Upload”或别的内容。
+        你可以在 <slot> 标签内部指定默认的内容来做到这一点。-->
+    <div id="app-3">
+        <submit-button>Update</submit-button>
+    </div>
+
+    <!-- 该插槽可以访问跟这个模板的其它地方相同的实例属性 (也就是说“作用域”是相同的)。
+        但这个插槽不能访问 <navigation-link> 的作用域。例如尝试访问 url 是不会工作的。
+        父组件模板的所有东西都会在父级作用域内编译；子组件模板的所有东西都会在子级作用域内编译。 
+    -->
+    <div id="app-4">
+        <navigation-link url="/profile">
+            Logged in as {{ user.name }}
+        </navigation-link>
+    </div>
+
+    <!-- 作用域插槽 -->
+    <div id="app-5">
+        <todo-list v-bind:todos="todos">
+            <!-- 将slotProps定义为插槽作用域的名字-->
+            <template slot-scope="slotProps">
+                <!-- 为待办项自定义一个模板 -->
+                <!-- 通过slotProps定制每个待办项 -->
+                <span v-if="slotProps.todo.isComplete">✓</span>
+                {{ slotProps.todo.text }}
+            </template>
+        </todo-list>
+    </div>
+
+    <!-- 解构slot-scope -->
+    <!-- 如果一个 JavaScript 表达式在一个函数定义的参数位置有效，
+        那么这个表达式实际上就可以被 slot-scope 接受。也就是说你可以在支持的环境下 (单文件组件或现代浏览器)，
+        在这些表达式中使用 ES2015 解构语法。 -->
+    <div id="app-6">
+        <todo-list v-bind:todos="todos">
+            <!-- 将slotProps定义为插槽作用域的名字-->
+            <template slot-scope="{todo}">
+                <!-- 为待办项自定义一个模板 -->
+                <!-- 通过slotProps定制每个待办项 -->
+                <span v-if="todo.isComplete">✓</span>
+                {{ todo.text }}
+            </template>
+        </todo-list>
+    </div>
+
+<script>
+    Vue.component('navigation-link', {
+        props: ['url'],
+        template: `
+            <a v-bind:href="url"
+                class="nav-link"
+            >
+                <slot></slot>
+            </a>    
+        `
+    });
+    new Vue({
+        el: '#app'
+    });
+
+    Vue.component('base-layout', {
+        template: `
+            <div class="container">
+                <header>
+                    <slot name="header"></slot>
+                </header>
+                <main>
+                    <slot></slot>
+                </main>
+                <footer>
+                    <slot name="footer"></slot>
+                </footer>
+            </div>
+        `
+    });
+    new Vue({
+        el: '#app-1'
+    });
+    new Vue({el: '#app-2'});
+
+    Vue.component('submit-button', {
+        template: `
+            <button type="submit">
+                <slot>Submit</slot>
+            </button>
+        `
+    });
+    new Vue({el: '#app-3'});
+
+    new Vue({
+        el: '#app-4', 
+        data: {
+            user: {id: 1, name: 'vue'}
+        }
+    });
+
+    Vue.component('todo-list', {
+        props: ['todos'],
+        template: `
+            <ul>
+                <li 
+                    v-for="todo in todos"
+                    v-bind:key="todo.id"
+                >
+                    <!-- 我们为每个todo准备了一个插槽 -->
+                    <!-- 将todo对象作为一个插槽的prop传入 -->
+                    <slot v-bind:todo="todo">
+                        {{ todo.text }}
+                    </slot>
+                </li>
+            </ul>
+        `
+    });
+    new Vue({
+        el: '#app-5', 
+        data: {
+            todos: [
+                {id: 1, text: 'js'}, 
+                {id: 2, text: 'vue', isComplete: true}
+            ]
+        }
+    });
+    new Vue({
+        el: '#app-6', 
+        data: {
+            todos: [
+                {id: 1, text: 'js', isComplete: true}, 
+                {id: 2, text: 'vue'}
+            ]
+        }
+    });
+
+</script>
+</body>
+</html>
