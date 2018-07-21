@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Vue router dynamic matching test</title>
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
+</head>
+<body>
+    <div id="app">
+        <h1>Hello Vue Router</h1>
+        <p>
+            <router-link to="/user/foo">Foo</router-link>
+            <router-link to="/user/bar">Bar</router-link>
+            <router-link to="/user/wang/post/123">more param</router-link>
+        </p>
+        <router-view></router-view>
+    </div>
+
+
+    <script>
+        const User = {
+            // 一个“路径参数”使用冒号 : 标记。当匹配到一个路由时，
+            // 参数值会被设置到 this.$route.params，可以在每个组件内使用。
+            // 于是，我们可以更新 User 的模板，输出当前用户的 ID
+            template: `<div>User {{ $route.params.id }}--{{ $route.params.post_id }}</div>`, 
+            watch: {
+                '$route' (to, from) {
+                    console.log(to)
+                    console.log(from)
+                }
+            }, 
+            // do not work
+            // beforeRouteUpdate (to, from, next) {
+            //     console.log(to)
+            //     console.log(from)
+            //     console.log(next)
+            // }
+        }
+
+        const router = new VueRouter({
+            routes: [
+                // 动态路径参数，以冒号开头
+                {path: '/user/:id', component: User},
+                {path: '/user/:id/post/:post_id', component: User}
+            ]
+        })
+        const app = new Vue({
+            router
+        }).$mount('#app');
+    </script>
+</body>
+</html>
