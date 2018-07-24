@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Vue named routes test</title>
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
+</head>
+<body>
+    <div id="app">
+        <p>
+            <router-link :to="{name: 'user', params: {uid: 123}}">/user/foo</router-link>
+        </p>
+        <router-view></router-view>
+    </div>
+
+    <script>
+        const User = {
+            template: `
+                <div class="user">
+                    <h2>User {{ $route.params.uid }}</h2>
+                </div>
+            `
+        };
+        
+        const router = new VueRouter({
+            routes: [
+                // 动态路径参数，以冒号开头
+                {
+                    name: 'user',
+                    path: '/user/:uid', 
+                    component: User
+                }
+            ]
+        })
+        const app = new Vue({
+            router
+        }).$mount('#app');
+        console.log(router);
+    </script>
+</body>
+</html>
