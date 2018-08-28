@@ -29,7 +29,7 @@ Axios.interceptors.request.use(function (config) {
 // Moment
 import Moment from 'moment'
 
-// global filter
+// 全局日期过滤器
 Vue.filter('convertDate', function(value) {
   return Moment(value).format('YYYY-MM-DD')
 })
