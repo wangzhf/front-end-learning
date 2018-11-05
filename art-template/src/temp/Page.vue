@@ -188,7 +188,7 @@
         :visible.sync="assignUser.visible"
         :close-on-click-modal="false"
         title="关联用户"
-        @close="handleDialogClose('assignUser')"
+        @close="handleDialogClose('assignUser', 'assignUserTableDialog')"
       >
         <im-table
           ref="assignUserTableDialog"
@@ -209,7 +209,7 @@
         :visible.sync="assignRole.visible"
         :close-on-click-modal="false"
         title="关联角色"
-        @close="handleDialogClose('assignRole')"
+        @close="handleDialogClose('assignRole', 'assignRoleTreeDialog')"
       >
         <im-tree
           ref="assignRoleTreeDialog"
@@ -231,7 +231,7 @@
         :visible.sync="edit.visible"
         :close-on-click-modal="false"
         title="编辑"
-        @close="handleDialogClose('edit')"
+        @close="handleDialogClose('edit', 'editForm')"
       >
         <el-form
           ref="editForm"
@@ -303,7 +303,7 @@
         :visible.sync="add.visible"
         :close-on-click-modal="false"
         title="新增"
-        @close="handleDialogClose('add')"
+        @close="handleDialogClose('add', 'addForm')"
       >
         <el-form
           ref="addForm"
@@ -611,12 +611,15 @@ export default {
         dialog.loading = false
       })
     },
-    handleDialogClose(type) {
+    handleDialogClose(type, ref) {
       if (this[type]) {
         const action = this[type]
         // if (action.visible) action.visible = false
         if (action.loading) action.loading = false
         if (action.linkId) action.linkId = null
+        if (typeof this.$refs[ref].close === 'function') {
+          this.$refs[ref].close()
+        }
       }
     }
   }

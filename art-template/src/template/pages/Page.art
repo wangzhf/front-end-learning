@@ -200,7 +200,7 @@
         :visible.sync="<%= action.name %>.visible"
         :close-on-click-modal="false"
         title="<%= action.dialog.title %>"
-        @close="handleDialogClose('<%= action.name %>')"
+        @close="handleDialogClose('<%= action.name %>', '<%= action.name %>Form')"
       >
         <% if (action.dialog.columns && action.dialog.columns.length > 0) { %>
         <el-form
@@ -270,7 +270,7 @@
         :visible.sync="<%= action.name %>.visible"
         :close-on-click-modal="false"
         title="<%= action.dialog.title %>"
-        @close="handleDialogClose('<%= action.name %>')"
+        @close="handleDialogClose('<%= action.name %>', '<%= action.name %>TreeDialog')"
       >
         <im-tree
           ref="<%= action.name %>TreeDialog"
@@ -298,7 +298,7 @@
         :visible.sync="<%= action.name %>.visible"
         :close-on-click-modal="false"
         title="<%= action.dialog.title %>"
-        @close="handleDialogClose('<%= action.name %>')"
+        @close="handleDialogClose('<%= action.name %>', '<%= action.name %>TableDialog')"
       >
         <im-table
           ref="<%= action.name %>TableDialog"
@@ -569,12 +569,16 @@ export default {
         dialog.loading = false
       })
     },
-    handleDialogClose(type) {
+    handleDialogClose(type, ref) {
       if (this[type]) {
         const action = this[type]
         // if (action.visible) action.visible = false
         if (action.loading) action.loading = false
         if (action.linkId) action.linkId = null
+
+        if (typeof this.$refs[ref].close === 'function') {
+          this.$refs[ref].close()
+        }
       }
     }
   }
