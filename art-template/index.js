@@ -30,18 +30,26 @@ function init() {
 }
 
 const cachedKeyProps = {}
-template.defaults.imports.cacheKeyProps = ((key, value) => {
-  console.log(value)
+template.defaults.imports.cacheKeyProps = ((key, value, append) => {
   if (typeof value === 'boolean') {
     cachedKeyProps[key] = value
     return value
   }
   if (value != undefined && value != null && value != '') {
-    console.log(value + '====>>saved')
+    if (append) {
+      if (cachedKeyProps[key]) {
+        // merge
+        const old = JSON.parse(cachedKeyProps[key])
+        for (var newK in value) {
+          old[newK] = value[newK]
+        }
+        cachedKeyProps[key] = JSON.stringify(old)
+        return value
+      }
+    }
     cachedKeyProps[key] = JSON.stringify(value)
     return value
   } else {
-    console.log(value + '====>> not saved')
     return cachedKeyProps[key]
   }
 })

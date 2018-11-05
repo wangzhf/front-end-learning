@@ -1,4 +1,4 @@
-/* eslint-disable */
+<!-- eslint-disable -->
 <template>
   <div class="content-container">
     <el-row>
@@ -7,15 +7,15 @@
       <el-form ref="searchForm" :inline="true" label-width="80px">
         <% for (var i = 0; i < searchColumns.length; i++) { %>
         <% var searchItem = searchColumns[i] %>
-        <el-col :key="<%= searchItem.field %>" :span="8">
-          <el-form-item :label="<%= searchItem.title %>">
+        <el-col key="<%= searchItem.field %>" :span="8">
+          <el-form-item label="<%= searchItem.title %>">
             <% if (searchItem.type == 'input') { %>
-            <el-input v-model.trim="searchForm[<%= searchItem.field %>]" clearable />
+            <el-input v-model.trim="searchForm['<%= searchItem.field %>']" clearable />
             <% } else if (searchItem.type == 'select') { %>
             <% if (searchItem.dependon) { %>
             <im-select
-              :dependon-value="searchForm[<%= searchItem.dependon %>]"
-              :dependon-key="<%= searchItem.dependon %>"
+              :dependon-value="searchForm['<%= searchItem.dependon %>'] + ''"
+              dependon-key="<%= searchItem.dependon %>"
               <% if (searchItem.keyProps) { %>
               <% $imports.cacheKeyProps('searchKeyProps', searchItem.keyProps) %>
               :key-props="searchKeyProps"
@@ -80,7 +80,9 @@
         </span>
         <% } %>
         <% } %>
-        <el-button v-if="needExpand" :icon="expandBtn.icon" type="primary" @click="handleChildExpand">{{ expandBtn.text }}</el-button>
+        <span>
+          <el-button v-if="needExpand" :icon="expandBtn.icon" type="primary" @click="handleChildExpand">{{ expandBtn.text }}</el-button>
+        </span>
       </el-button-group>
       <% } %>
     </el-col>
@@ -143,28 +145,28 @@
               icon="<%= action.icon ? action.icon : '' %>"
               class="<%= action.mini ? 'mini-btn-style' : '' %>"
               @click.stop="handleDialogVisible(scope.$index, scope.row, '<%= action.name %>')"
-            ><%= action.mini ? '1' : action.title %></el-button>
+            ><%= action.mini ? '' : action.title %></el-button>
             <% } else if (action.type == 'tableDialog') {%>
             <el-button
               type="<%= action.theme ? action.theme : '' %>"
               icon="<%= action.icon ? action.icon : '' %>"
               class="<%= action.mini ? 'mini-btn-style' : '' %>"
               @click.stop="handleDialogVisible(scope.$index, scope.row, '<%= action.name %>')"
-            ><%= action.mini ? '2' : action.title %></el-button>
+            ><%= action.mini ? '' : action.title %></el-button>
             <% } else if (action.type == 'editDialog') {%>
             <el-button
               type="<%= action.theme ? action.theme : '' %>"
               icon="<%= action.icon ? action.icon : '' %>"
               class="<%= action.mini ? 'mini-btn-style' : '' %>"
               @click.stop="handleEdit(scope.$index, scope.row, '<%= action.name %>')"
-            ><%= action.mini ? '3' : action.title %></el-button>
+            ><%= action.mini ? '' : action.title %></el-button>
             <% } else if (action.type == 'deleteConfirm') {%>
             <el-button
               type="<%= action.theme ? action.theme : '' %>"
               icon="<%= action.icon ? action.icon : '' %>"
               class="<%= action.mini ? 'mini-btn-style' : '' %>"
               @click.stop="handleDelete(scope.$index, scope.row, '<%= action.name %>', '<%= action.dialog.confirmUrl %>')"
-            ><%= action.mini ? '4' : action.title %></el-button>
+            ><%= action.mini ? '' : action.title %></el-button>
             <% } %>
           </span>
           <% }} %>
@@ -186,42 +188,44 @@
     </div>
 
     <% for (var i=0; i < pageData.actions.length; i++) { %>
-    <% if (action.dialog && action.place == 'tableCell') {%>
     <% var action = pageData.actions[i] %>
+    <% if (action.dialog) { %>
     <% if (action.dialog.type == 'form') { %>
     <div key="<%= action.name %>">
       <!-- form dialog -->
+      <% $imports.cacheKeyProps(action.name, {'confirmUrl': action.dialog.confirmUrl}) %>
       <el-dialog
         v-el-drag-dialog
-        <% $imports.cacheKeyProps(action.name + 'FormVisible', action.dialog.visible) %>
-        :visible.sync="<%= action.name %>FormVisible"
+        <% $imports.cacheKeyProps(action.name, {'visible': action.dialog.visible}, true) %>
+        :visible.sync="<%= action.name %>.visible"
         :close-on-click-modal="false"
         title="<%= action.dialog.title %>"
+        @close="handleDialogClose('<%= action.name %>')"
       >
         <% if (action.dialog.columns && action.dialog.columns.length > 0) { %>
         <el-form
           ref="<%= action.name %>Form"
-          <% $imports.cacheKeyProps(action.name + 'FormData', action.dialog.formData) %>
-          :model="<%= action.name %>FormData"
-          <% $imports.cacheKeyProps(action.name + 'FormRules', action.dialog.formRules) %>
-          :rules="<%= action.name %>FormRules"
+          <% $imports.cacheKeyProps(action.name, {'formData': action.dialog.formData}, true) %>
+          :model="<%= action.name %>.formData"
+          <% $imports.cacheKeyProps(action.name, {'formRules': action.dialog.formRules}, true) %>
+          :rules="<%= action.name %>.formRules"
           label-width="80px"
         >
           <% for (var j=0; j<action.dialog.columns.length; j++) { %>
           <% var item = action.dialog.columns[j] %>
-          <el-form-item key="<%= item.field %>" :label="<%= item.title %>" :prop="<%= item.field %>">
+          <el-form-item key="<%= item.field %>" label="<%= item.title %>" prop="<%= item.field %>">
             <% if (item.type == 'input') {%>
             <el-input
-              v-model="<%= action.name %>FormData['<%= item.field %>']"
+              v-model="<%= action.name %>.formData['<%= item.field %>']"
               auto-complete="off"
             />
             <% } else if (item.type == 'radio') { %>
-            <el-radio-group v-model="<%= action.name %>FormData['<%= item.field %>']">
+            <el-radio-group v-model="<%= action.name %>.formData['<%= item.field %>']">
               <% for(var k =0; k<item.options.length; k++) { %>
               <% var option = item.options[k] %>
               <el-radio 
-                :key="<%= option.value %>" 
-                :label="<%= option.value %>" 
+                key="<%= option.value %>" 
+                label="<%= option.value %>" 
                 class="radio"
               >
                 <%= option.label %>
@@ -230,19 +234,19 @@
             </el-radio-group>
             <% } else if (item.type == 'number') { %>
             <el-input-number
-              v-model="<%= action.name %>FormData['<%= item.field %>']"
+              v-model="<%= action.name %>.formData['<%= item.field %>']"
               :min="<%= item.option.min %>"
               :max="<%= item.option.max %>"
             />
             <% } else if (item.type == 'date') { %>
             <el-date-picker
-              v-model="<%= action.name %>FormData['<%= item.field %>']"
-              :type="<%= item.type %>"
+              v-model="<%= action.name %>.formData['<%= item.field %>']"
+              type="<%= item.type %>"
               placeholder="选择日期"
             />
             <% } else if (item.type == 'textarea') { %>
             <el-input
-              v-model="<%= action.name %>FormData['<%= item.field %>']"
+              v-model="<%= action.name %>.formData['<%= item.field %>']"
               type="textarea"
             />
             <% } %>
@@ -251,7 +255,7 @@
         </el-form>
         <% } %>
         <div slot="footer" class="dialog-footer">
-          <el-button @click.native="<%= action.name + 'FormVisible' %> = false; $refs['<%= action.name %>Form'][0].resetFields();">取消</el-button>
+          <el-button @click.native="<%= action.name %>.visible = false; $refs['<%= action.name %>Form'].resetFields();">取消</el-button>
           <el-button type="primary" @click.native="formDialogSubmit('<%= action.name %>')">提交</el-button>
         </div>
       </el-dialog>
@@ -259,25 +263,27 @@
     <% } else if (action.dialog.type == 'tree') { %>
     <div key="<%= action.name %>">
       <!-- tree dialog -->
+      <% $imports.cacheKeyProps(action.name, {'confirmUrl': action.dialog.confirmUrl}) %>
       <el-dialog
         v-el-drag-dialog
-        <% $imports.cacheKeyProps(action.name + 'TreeVisible', action.dialog.visible) %>
-        :visible.sync="<%= action.name %>TreeVisible"
+        <% $imports.cacheKeyProps(action.name, {'visible': action.dialog.visible}, true) %>
+        :visible.sync="<%= action.name %>.visible"
         :close-on-click-modal="false"
         title="<%= action.dialog.title %>"
+        @close="handleDialogClose('<%= action.name %>')"
       >
         <im-tree
           ref="<%= action.name %>TreeDialog"
-          <% $imports.cacheKeyProps(action.name + 'QueryData', action.dialog.queryData) %>
-          :query-data="<%= action.name %>QueryData"
-          <% $imports.cacheKeyProps(action.name + 'Loading', action.dialog.loading) %>
-          :is-tree-dialog-loading="<%= action.name %>Loading"
-          <% $imports.cacheKeyProps(action.name + 'KeyProps', action.dialog.keyProps) %>
-          :key-props="<%= action.name %>KeyProps"
+          <% $imports.cacheKeyProps(action.name, {'queryData': action.dialog.queryData}, true) %>
+          :query-data="<%= action.name %>.queryData"
+          <% $imports.cacheKeyProps(action.name, {'loading': action.dialog.loading}, true) %>
+          :is-tree-dialog-loading="<%= action.name %>.loading"
+          <% $imports.cacheKeyProps(action.name, {'keyProps': action.dialog.keyProps}, true) %>
+          :key-props="<%= action.name %>.keyProps"
           url="<%= action.dialog.listUrl %>"
         />
         <span slot="footer" class="dialog-footer">
-          <el-button @click.native="<%= action.name %>TreeVisible = false">取 消</el-button>
+          <el-button @click.native="<%= action.name %>.visible = false">取 消</el-button>
           <el-button type="primary" @click="handleDialogConfirm('<%= action.name %>', '<%= action.name %>TreeDialog')">确 定</el-button>
         </span>
       </el-dialog>
@@ -285,29 +291,32 @@
     <% } else if (action.dialog.type == 'table') { %>
     <div key="<%= action.name %>">
       <!-- table dialog -->
+      <% $imports.cacheKeyProps(action.name, {'confirmUrl': action.dialog.confirmUrl}) %>
       <el-dialog
         v-el-drag-dialog
-        <% $imports.cacheKeyProps(action.name + 'TableVisible', action.dialog.visible) %>
-        :visible.sync="<%= action.name %>TableVisible"
+        <% $imports.cacheKeyProps(action.name, {'visible': action.dialog.visible}, true) %>
+        :visible.sync="<%= action.name %>.visible"
         :close-on-click-modal="false"
         title="<%= action.dialog.title %>"
+        @close="handleDialogClose('<%= action.name %>')"
       >
         <im-table
           ref="<%= action.name %>TableDialog"
-          <% $imports.cacheKeyProps(action.name + 'Loading', action.dialog.loading) %>
-          :should-loading="<%= action.name %>Loading"
-          <% $imports.cacheKeyProps(action.name + 'ColumnProps', action.dialog.columnProps) %>
-          :table-columns="<%= action.name %>ColumnProps"
+          <% $imports.cacheKeyProps(action.name, {'loading': action.dialog.loading}, true) %>
+          :should-loading="<%= action.name %>.loading"
+          <% $imports.cacheKeyProps(action.name, {'columnProps': action.dialog.columnProps}, true) %>
+          :table-columns="<%= action.name %>.columnProps"
           url="<%= action.dialog.listUrl %>"
         />
         <span slot="footer" class="dialog-footer">
-          <el-button @click.native="<%= action.name %>TableVisible = false">取 消</el-button>
-          <el-button type="primary" @click="handleDialogConfirm(action.name, action.name + 'TableDialog')">确 定</el-button>
+          <el-button @click.native="<%= action.name %>.visible = false">取 消</el-button>
+          <el-button type="primary" @click="handleDialogConfirm('<%= action.name %>', '<%= action.name %>TableDialog')">确 定</el-button>
         </span>
       </el-dialog>
-      <% } %>
     </div>
-    <% }} %>
+    <% } %>
+    <% } %>
+    <% } %>
   </div>
 </template>
 
@@ -341,7 +350,12 @@ export default {
     return {
       // 列表集合
       list: [],
-      searchForm: {},
+      searchForm: {
+        <% if (pageData.searchArea && pageData.searchArea.columns && pageData.searchArea.columns.length > 0) {%>
+        <% for(var i=0; i < pageData.searchArea.columns.length; i++) { %>
+        <%- pageData.searchArea.columns[i].field %>: ''<%= i < pageData.searchArea.columns.length - 1 ? ',' : '' %>
+        <% }} %>
+      },
 
       blankSpace: '',
 
@@ -364,7 +378,7 @@ export default {
       pageSize: 10,
 
       // 是否需要子表格
-      needExpand: this.pageData.table && this.pageData.table.childColumns && this.pageData.table.childColumns.length > 0,
+      needExpand: <%= pageData.table && pageData.table.childColumns && pageData.table.childColumns.length > 0 ? true : false %>,
 
       // 记录多选记录
       multipleSelection: [],
@@ -407,7 +421,7 @@ export default {
         currentPage: this.currentPage,
         pageSize: this.pageSize
       }
-      const searchUrl = this.pageData.searchArea.url
+      const searchUrl = '<%= pageData.searchArea.url %>'
       commonAPI.Post(searchUrl, params).then(res => {
         this.list = res.data.list
         this.total = res.data.total
@@ -422,31 +436,11 @@ export default {
       })
     },
     handleAdd(type) {
-      const actions = this.pageData.actions
-      if (actions && actions.length > 0) {
-        actions.forEach(action => {
-          const dialog = action.dialog
-          if (dialog && dialog.title) {
-            if (dialog.type === 'form' && action.name === type) {
-              dialog.visible = true
-            }
-          }
-        })
-      }
+      this[type].visible = true
     },
     handleEdit(index, row, type) {
-      const actions = this.pageData.actions
-      if (actions && actions.length > 0) {
-        actions.forEach(action => {
-          const dialog = action.dialog
-          if (dialog && dialog.title) {
-            if (dialog.type === 'form' && action.name === type) {
-              dialog.formData = Object.assign({}, row)
-              dialog.visible = true
-            }
-          }
-        })
-      }
+      this[type].formData = Object.assign({}, row)
+      this[type].visible = true
     },
     handleDelete(index, row, type, url) {
       this.$confirm('确认删除该记录吗？', '提示', {
@@ -522,84 +516,65 @@ export default {
     },
     // 编辑提交
     formDialogSubmit(type) {
-      const actions = this.pageData.actions
-      if (actions && actions.length > 0) {
-        actions.forEach(action => {
-          const dialog = action.dialog
-          if (dialog && dialog.title) {
-            if (dialog.type === 'form' && action.name === type) {
-              const form = action.name + 'Form'
-              this.$refs[form][0].validate(valid => {
-                if (valid) {
-                  this.$confirm('确认提交吗？', '提示', {}).then(() => {
-                    const param = Object.assign({}, dialog.formData)
-                    commonAPI.Post(dialog.confirmUrl, param).then(res => {
-                      this.$message({
-                        type: 'success',
-                        message: '操作成功'
-                      })
-                      this.$refs[form][0].resetFields()
-                      dialog.visible = false
-                      this.load()
-                    })
-                  }).catch(() => {
-                    // cancel
-                  })
-                }
+      const form = type + 'Form'
+      console.log(this.$refs)
+      this.$refs[form].validate(valid => {
+        if (valid) {
+          this.$confirm('确认提交吗？', '提示', {}).then(() => {
+            const param = Object.assign({}, this[type].formData)
+            commonAPI.Post(this[type].confirmUrl, param).then(res => {
+              this.$message({
+                type: 'success',
+                message: '操作成功'
               })
-            }
-          }
-        })
-      }
+              this.$refs[form].resetFields()
+              this[type].visible = false
+              this.load()
+            })
+          }).catch(() => {
+            // cancel
+          })
+        }
+      })
     },
     // dialog 显示
     handleDialogVisible(index, row, type) {
-      const actions = this.pageData.actions
-      if (actions && actions.length > 0) {
-        actions.forEach(action => {
-          const dialog = action.dialog
-          if (dialog && dialog.title) {
-            if (action.name === type) {
-              dialog.linkId = row.id
-              const param = {
-                id: row.id
-              }
-              dialog.queryData = param
-              dialog.loading = true
-              dialog.visible = true
-            }
-          }
-        })
+      const dialog = this[type]
+      dialog.linkId = row.id
+      const param = {
+        id: row.id
       }
+      dialog.queryData = param
+      dialog.loading = true
+      dialog.visible = true
     },
     // dialog 确认事件
     handleDialogConfirm(type, ref) {
-      const checkedKeys = this.$refs[ref][0].getSelection().map(item => {
+      const checkedKeys = this.$refs[ref].getSelection().map(item => {
         return item.id
       })
 
-      const actions = this.pageData.actions
-      if (actions && actions.length > 0) {
-        actions.forEach(action => {
-          const dialog = action.dialog
-          if (dialog && dialog.title) {
-            if (action.name === type) {
-              const params = {
-                id: dialog.linkId,
-                data: checkedKeys
-              }
-              commonAPI.Post(dialog.confirmUrl, params).then(res => {
-                this.$message({
-                  type: 'success',
-                  message: '操作成功'
-                })
-                dialog.visible = false
-                dialog.linkId = null
-                dialog.loading = false
-              })
-            }
-          }
+      const dialog = this[type]
+      const params = {
+        id: dialog.linkId,
+        data: checkedKeys
+      }
+      commonAPI.Post(dialog.confirmUrl, params).then(res => {
+        this.$message({
+          type: 'success',
+          message: '操作成功'
         })
+        dialog.visible = false
+        dialog.linkId = null
+        dialog.loading = false
+      })
+    },
+    handleDialogClose(type) {
+      if (this[type]) {
+        const action = this[type]
+        // if (action.visible) action.visible = false
+        if (action.loading) action.loading = false
+        if (action.linkId) action.linkId = null
       }
     }
   }

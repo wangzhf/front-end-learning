@@ -1,39 +1,39 @@
-/* eslint-disable */
+<!-- eslint-disable -->
 <template>
   <div class="content-container">
     <el-row>
       <el-form ref="searchForm" :inline="true" label-width="80px">
-        <el-col :key="userName" :span="8">
-          <el-form-item :label="用户姓名">
-            <el-input v-model.trim="searchForm[userName]" clearable />
+        <el-col key="userName" :span="8">
+          <el-form-item label="用户姓名">
+            <el-input v-model.trim="searchForm['userName']" clearable />
           </el-form-item>
         </el-col>
-        <el-col :key="userCode" :span="8">
-          <el-form-item :label="用户代码">
-            <el-input v-model.trim="searchForm[userCode]" clearable />
+        <el-col key="userCode" :span="8">
+          <el-form-item label="用户代码">
+            <el-input v-model.trim="searchForm['userCode']" clearable />
           </el-form-item>
         </el-col>
-        <el-col :key="province" :span="8">
-          <el-form-item :label="省">
+        <el-col key="province" :span="8">
+          <el-form-item label="省">
             <im-select
               url="/common/province/list"
               @select-change="(val) => $set(searchForm, 'province', val)"
             />
           </el-form-item>
         </el-col>
-        <el-col :key="city" :span="8">
-          <el-form-item :label="市">
+        <el-col key="city" :span="8">
+          <el-form-item label="市">
             <im-select
-              :dependon-value="searchForm[province]"
-              :dependon-key="province"
+              :dependon-value="searchForm['province'] + ''"
+              dependon-key="province"
               :key-props="searchKeyProps"
               url="/common/city/list"
               @select-change="(val) => $set(searchForm, 'city', val)"
             />
           </el-form-item>
         </el-col>
-        <el-col :key="menu" :span="8">
-          <el-form-item :label="菜单">
+        <el-col key="menu" :span="8">
+          <el-form-item label="菜单">
             <im-el-select-tree
               url="/menu/list"
               @select-change="(val) => $set(searchForm, 'menu', val)"
@@ -62,7 +62,9 @@
             @click="batchDelete('/user/batchDelete')"
           >批量删除</el-button>
         </span>
-        <el-button v-if="needExpand" :icon="expandBtn.icon" type="primary" @click="handleChildExpand">{{ expandBtn.text }}</el-button>
+        <span>
+          <el-button v-if="needExpand" :icon="expandBtn.icon" type="primary" @click="handleChildExpand">{{ expandBtn.text }}</el-button>
+        </span>
       </el-button-group>
     </el-col>
     <el-table
@@ -138,7 +140,7 @@
               icon="el-icon-fa-user-friends"
               class="mini-btn-style"
               @click.stop="handleDialogVisible(scope.$index, scope.row, 'assignUser')"
-            >2</el-button>
+            ></el-button>
           </span>
           <span key="assignRole" style="padding-left: 5px;">
             <el-button
@@ -146,7 +148,7 @@
               icon="el-icon-fa-users"
               class="mini-btn-style"
               @click.stop="handleDialogVisible(scope.$index, scope.row, 'assignRole')"
-            >1</el-button>
+            ></el-button>
           </span>
           <span key="edit" style="padding-left: 5px;">
             <el-button
@@ -154,7 +156,7 @@
               icon="el-icon-edit"
               class="mini-btn-style"
               @click.stop="handleEdit(scope.$index, scope.row, 'edit')"
-            >3</el-button>
+            ></el-button>
           </span>
           <span key="delete" style="padding-left: 5px;">
             <el-button
@@ -162,7 +164,7 @@
               icon="el-icon-delete"
               class="mini-btn-style"
               @click.stop="handleDelete(scope.$index, scope.row, 'delete', '/user/delete')"
-            >4</el-button>
+            ></el-button>
           </span>
         </template>
       </el-table-column>
@@ -178,6 +180,193 @@
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
       />
+    </div>
+    <div key="assignUser">
+      <!-- table dialog -->
+      <el-dialog
+        v-el-drag-dialog
+        :visible.sync="assignUser.visible"
+        :close-on-click-modal="false"
+        title="关联用户"
+        @close="handleDialogClose('assignUser')"
+      >
+        <im-table
+          ref="assignUserTableDialog"
+          :should-loading="assignUser.loading"
+          :table-columns="assignUser.columnProps"
+          url="/user/userList"
+        />
+        <span slot="footer" class="dialog-footer">
+          <el-button @click.native="assignUser.visible = false">取 消</el-button>
+          <el-button type="primary" @click="handleDialogConfirm('assignUser', 'assignUserTableDialog')">确 定</el-button>
+        </span>
+      </el-dialog>
+    </div>
+    <div key="assignRole">
+      <!-- tree dialog -->
+      <el-dialog
+        v-el-drag-dialog
+        :visible.sync="assignRole.visible"
+        :close-on-click-modal="false"
+        title="关联角色"
+        @close="handleDialogClose('assignRole')"
+      >
+        <im-tree
+          ref="assignRoleTreeDialog"
+          :query-data="assignRole.queryData"
+          :is-tree-dialog-loading="assignRole.loading"
+          :key-props="assignRole.keyProps"
+          url="/user/role"
+        />
+        <span slot="footer" class="dialog-footer">
+          <el-button @click.native="assignRole.visible = false">取 消</el-button>
+          <el-button type="primary" @click="handleDialogConfirm('assignRole', 'assignRoleTreeDialog')">确 定</el-button>
+        </span>
+      </el-dialog>
+    </div>
+    <div key="edit">
+      <!-- form dialog -->
+      <el-dialog
+        v-el-drag-dialog
+        :visible.sync="edit.visible"
+        :close-on-click-modal="false"
+        title="编辑"
+        @close="handleDialogClose('edit')"
+      >
+        <el-form
+          ref="editForm"
+          :model="edit.formData"
+          :rules="edit.formRules"
+          label-width="80px"
+        >
+          <el-form-item key="userName" label="用户姓名" prop="userName">
+            <el-input
+              v-model="edit.formData['userName']"
+              auto-complete="off"
+            />
+          </el-form-item>
+          <el-form-item key="userCode" label="用户代码" prop="userCode">
+            <el-input
+              v-model="edit.formData['userCode']"
+              auto-complete="off"
+            />
+          </el-form-item>
+          <el-form-item key="sex" label="性别" prop="sex">
+            <el-radio-group v-model="edit.formData['sex']">
+              <el-radio 
+                key="1" 
+                label="1" 
+                class="radio"
+              >
+                男
+              </el-radio>
+              <el-radio 
+                key="0" 
+                label="0" 
+                class="radio"
+              >
+                女
+              </el-radio>
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item key="age" label="年龄" prop="age">
+            <el-input-number
+              v-model="edit.formData['age']"
+              :min="0"
+              :max="200"
+            />
+          </el-form-item>
+          <el-form-item key="birthday" label="生日" prop="birthday">
+            <el-date-picker
+              v-model="edit.formData['birthday']"
+              type="date"
+              placeholder="选择日期"
+            />
+          </el-form-item>
+          <el-form-item key="address" label="地址" prop="address">
+            <el-input
+              v-model="edit.formData['address']"
+              type="textarea"
+            />
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click.native="edit.visible = false; $refs['editForm'].resetFields();">取消</el-button>
+          <el-button type="primary" @click.native="formDialogSubmit('edit')">提交</el-button>
+        </div>
+      </el-dialog>
+    </div>
+    <div key="add">
+      <!-- form dialog -->
+      <el-dialog
+        v-el-drag-dialog
+        :visible.sync="add.visible"
+        :close-on-click-modal="false"
+        title="新增"
+        @close="handleDialogClose('add')"
+      >
+        <el-form
+          ref="addForm"
+          :model="add.formData"
+          :rules="add.formRules"
+          label-width="80px"
+        >
+          <el-form-item key="userName" label="用户姓名" prop="userName">
+            <el-input
+              v-model="add.formData['userName']"
+              auto-complete="off"
+            />
+          </el-form-item>
+          <el-form-item key="userCode" label="用户代码" prop="userCode">
+            <el-input
+              v-model="add.formData['userCode']"
+              auto-complete="off"
+            />
+          </el-form-item>
+          <el-form-item key="sex" label="性别" prop="sex">
+            <el-radio-group v-model="add.formData['sex']">
+              <el-radio 
+                key="1" 
+                label="1" 
+                class="radio"
+              >
+                男
+              </el-radio>
+              <el-radio 
+                key="0" 
+                label="0" 
+                class="radio"
+              >
+                女
+              </el-radio>
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item key="age" label="年龄" prop="age">
+            <el-input-number
+              v-model="add.formData['age']"
+              :min="0"
+              :max="200"
+            />
+          </el-form-item>
+          <el-form-item key="birthday" label="生日" prop="birthday">
+            <el-date-picker
+              v-model="add.formData['birthday']"
+              type="date"
+              placeholder="选择日期"
+            />
+          </el-form-item>
+          <el-form-item key="address" label="地址" prop="address">
+            <el-input
+              v-model="add.formData['address']"
+              type="textarea"
+            />
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click.native="add.visible = false; $refs['addForm'].resetFields();">取消</el-button>
+          <el-button type="primary" @click.native="formDialogSubmit('add')">提交</el-button>
+        </div>
+      </el-dialog>
     </div>
   </div>
 </template>
@@ -210,13 +399,23 @@ export default {
     return {
       // 列表集合
       list: [],
-      searchForm: {},
+      searchForm: {
+        userName: '',
+        userCode: '',
+        province: '',
+        city: '',
+        menu: ''
+      },
       blankSpace: '',
       // 遍历所有存储的数据
       // 
       // searchKeyProps: {"pid":"pid"},
       // 
       searchKeyProps: {"pid":"pid"},
+      assignUser: {"confirmUrl":"/user/userList","visible":false,"loading":false,"columnProps":[{"propName":"userName","label":"姓名"},{"propName":"userCode","label":"代码"}]},
+      assignRole: {"confirmUrl":"/user/role/add","visible":false,"queryData":{},"loading":false,"keyProps":{"children":"children","label":"roleName"}},
+      edit: {"confirmUrl":"/user/edit","visible":false,"formData":{},"formRules":{"userName":[{"required":true,"message":"请输入活动名称","trigger":"blur"},{"min":3,"max":5,"message":"长度在 3 到 5 个字符","trigger":"blur"}]}},
+      add: {"confirmUrl":"/user/add","visible":false,"formData":{},"formRules":{"userName":[{"required":true,"message":"请输入活动名称","trigger":"blur"},{"min":3,"max":5,"message":"长度在 3 到 5 个字符","trigger":"blur"}]}},
       // 列表默认展开的keys
       expandRowKeys: [],
       childColumnWidth: 4,
@@ -225,7 +424,7 @@ export default {
       currentPage: 1,
       pageSize: 10,
       // 是否需要子表格
-      needExpand: this.pageData.table && this.pageData.table.childColumns && this.pageData.table.childColumns.length > 0,
+      needExpand: true,
       // 记录多选记录
       multipleSelection: [],
       searchLoading: false
@@ -266,7 +465,7 @@ export default {
         currentPage: this.currentPage,
         pageSize: this.pageSize
       }
-      const searchUrl = this.pageData.searchArea.url
+      const searchUrl = '/user/userList'
       commonAPI.Post(searchUrl, params).then(res => {
         this.list = res.data.list
         this.total = res.data.total
@@ -281,31 +480,11 @@ export default {
       })
     },
     handleAdd(type) {
-      const actions = this.pageData.actions
-      if (actions && actions.length > 0) {
-        actions.forEach(action => {
-          const dialog = action.dialog
-          if (dialog && dialog.title) {
-            if (dialog.type === 'form' && action.name === type) {
-              dialog.visible = true
-            }
-          }
-        })
-      }
+      this[type].visible = true
     },
     handleEdit(index, row, type) {
-      const actions = this.pageData.actions
-      if (actions && actions.length > 0) {
-        actions.forEach(action => {
-          const dialog = action.dialog
-          if (dialog && dialog.title) {
-            if (dialog.type === 'form' && action.name === type) {
-              dialog.formData = Object.assign({}, row)
-              dialog.visible = true
-            }
-          }
-        })
-      }
+      this[type].formData = Object.assign({}, row)
+      this[type].visible = true
     },
     handleDelete(index, row, type, url) {
       this.$confirm('确认删除该记录吗？', '提示', {
@@ -380,83 +559,64 @@ export default {
     },
     // 编辑提交
     formDialogSubmit(type) {
-      const actions = this.pageData.actions
-      if (actions && actions.length > 0) {
-        actions.forEach(action => {
-          const dialog = action.dialog
-          if (dialog && dialog.title) {
-            if (dialog.type === 'form' && action.name === type) {
-              const form = action.name + 'Form'
-              this.$refs[form][0].validate(valid => {
-                if (valid) {
-                  this.$confirm('确认提交吗？', '提示', {}).then(() => {
-                    const param = Object.assign({}, dialog.formData)
-                    commonAPI.Post(dialog.confirmUrl, param).then(res => {
-                      this.$message({
-                        type: 'success',
-                        message: '操作成功'
-                      })
-                      this.$refs[form][0].resetFields()
-                      dialog.visible = false
-                      this.load()
-                    })
-                  }).catch(() => {
-                    // cancel
-                  })
-                }
+      const form = type + 'Form'
+      console.log(this.$refs)
+      this.$refs[form].validate(valid => {
+        if (valid) {
+          this.$confirm('确认提交吗？', '提示', {}).then(() => {
+            const param = Object.assign({}, this[type].formData)
+            commonAPI.Post(this[type].confirmUrl, param).then(res => {
+              this.$message({
+                type: 'success',
+                message: '操作成功'
               })
-            }
-          }
-        })
-      }
+              this.$refs[form].resetFields()
+              this[type].visible = false
+              this.load()
+            })
+          }).catch(() => {
+            // cancel
+          })
+        }
+      })
     },
     // dialog 显示
     handleDialogVisible(index, row, type) {
-      const actions = this.pageData.actions
-      if (actions && actions.length > 0) {
-        actions.forEach(action => {
-          const dialog = action.dialog
-          if (dialog && dialog.title) {
-            if (action.name === type) {
-              dialog.linkId = row.id
-              const param = {
-                id: row.id
-              }
-              dialog.queryData = param
-              dialog.loading = true
-              dialog.visible = true
-            }
-          }
-        })
+      const dialog = this[type]
+      dialog.linkId = row.id
+      const param = {
+        id: row.id
       }
+      dialog.queryData = param
+      dialog.loading = true
+      dialog.visible = true
     },
     // dialog 确认事件
     handleDialogConfirm(type, ref) {
-      const checkedKeys = this.$refs[ref][0].getSelection().map(item => {
+      const checkedKeys = this.$refs[ref].getSelection().map(item => {
         return item.id
       })
-      const actions = this.pageData.actions
-      if (actions && actions.length > 0) {
-        actions.forEach(action => {
-          const dialog = action.dialog
-          if (dialog && dialog.title) {
-            if (action.name === type) {
-              const params = {
-                id: dialog.linkId,
-                data: checkedKeys
-              }
-              commonAPI.Post(dialog.confirmUrl, params).then(res => {
-                this.$message({
-                  type: 'success',
-                  message: '操作成功'
-                })
-                dialog.visible = false
-                dialog.linkId = null
-                dialog.loading = false
-              })
-            }
-          }
+      const dialog = this[type]
+      const params = {
+        id: dialog.linkId,
+        data: checkedKeys
+      }
+      commonAPI.Post(dialog.confirmUrl, params).then(res => {
+        this.$message({
+          type: 'success',
+          message: '操作成功'
         })
+        dialog.visible = false
+        dialog.linkId = null
+        dialog.loading = false
+      })
+    },
+    handleDialogClose(type) {
+      if (this[type]) {
+        const action = this[type]
+        // if (action.visible) action.visible = false
+        if (action.loading) action.loading = false
+        if (action.linkId) action.linkId = null
       }
     }
   }
