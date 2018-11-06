@@ -14,6 +14,7 @@
         <el-col key="insuredType" :span="8">
           <el-form-item label="业务类型">
             <im-select
+              :source="insuredTypeSource"
               url=""
               @select-change="(val) => $set(searchForm, 'insuredType', val)"
             />
@@ -30,6 +31,7 @@
         <el-col key="insuranceType" :span="8">
           <el-form-item label="险种类型">
             <im-select
+              :source="insuranceTypeSource"
               url=""
               @select-change="(val) => $set(searchForm, 'insuranceType', val)"
             />
@@ -38,6 +40,7 @@
         <el-col key="isAvailable" :span="8">
           <el-form-item label="状态">
             <im-select
+              :source="isAvailableSource"
               url=""
               @select-change="(val) => $set(searchForm, 'isAvailable', val)"
             />
@@ -173,53 +176,111 @@
         v-el-drag-dialog
         :visible.sync="add.visible"
         :close-on-click-modal="false"
+        top="10vh"
         title="新增"
         @close="handleDialogClose('add', 'addForm')"
       >
-        <el-form
-          ref="addForm"
-          :model="add.formData"
-          :rules="add.formRules"
-          label-width="80px"
+        <el-scrollbar
+          tag="div"
+          class="is-empty"
+          wrap-class="el-select-dropdown__wrap"
+          view-class="el-select-dropdown__list"
         >
-          <el-form-item key="dealerCode" label="经销商" prop="dealerCode">
-          </el-form-item>
-          <el-form-item key="insuredType" label="业务类型" prop="insuredType">
-          </el-form-item>
-          <el-form-item key="companyCode" label="保险公司" prop="companyCode">
-          </el-form-item>
-          <el-form-item key="insuranceType" label="险种类型" prop="insuranceType">
-          </el-form-item>
-          <el-form-item key="startDate" label="生效日期" prop="startDate">
-            <el-date-picker
-              v-model="add.formData['startDate']"
-              type="date"
-              placeholder="选择日期"
-            />
-          </el-form-item>
-          <el-form-item key="endDate" label="终止日期" prop="endDate">
-            <el-date-picker
-              v-model="add.formData['endDate']"
-              type="date"
-              placeholder="选择日期"
-            />
-          </el-form-item>
-          <el-form-item key="commisionRate" label="佣金率(%)" prop="commisionRate">
-            <el-input-number
-              v-model="add.formData['commisionRate']"
-              :min="0"
-              :max="100"
-            />
-          </el-form-item>
-          <el-form-item key="isAvailable" label="状态" prop="isAvailable">
-          </el-form-item>
-          <el-form-item key="remark" label="说明" prop="remark">
-            <el-input
-              v-model="add.formData['remark']"
-              type="textarea"
-            />
-          </el-form-item>
-        </el-form>
+          <el-form
+            ref="addForm"
+            :model="add.formData"
+            :rules="add.formRules"
+            label-width="120px"
+          >
+            <el-form-item key="dealerCode" label="经销商" prop="dealerCode">
+              <el-col :span="20">
+                <im-select
+                  url=""
+                  @select-change="(val) => $set(add.formData, 'dealerCode', val)"
+                  style="width: 100%"
+                />
+              </el-col>
+            </el-form-item>
+            <el-form-item key="insuredType" label="业务类型" prop="insuredType">
+              <el-col :span="20">
+                <im-select
+                  :source="addinsuredTypeSource"
+                  url=""
+                  @select-change="(val) => $set(add.formData, 'insuredType', val)"
+                  style="width: 100%"
+                />
+              </el-col>
+            </el-form-item>
+            <el-form-item key="companyCode" label="保险公司" prop="companyCode">
+              <el-col :span="20">
+                <im-select
+                  url=""
+                  @select-change="(val) => $set(add.formData, 'companyCode', val)"
+                  style="width: 100%"
+                />
+              </el-col>
+            </el-form-item>
+            <el-form-item key="insuranceType" label="险种类型" prop="insuranceType">
+              <el-col :span="20">
+                <im-select
+                  :source="addinsuranceTypeSource"
+                  url=""
+                  @select-change="(val) => $set(add.formData, 'insuranceType', val)"
+                  style="width: 100%"
+                />
+              </el-col>
+            </el-form-item>
+            <el-form-item key="startDate" label="生效日期" prop="startDate">
+              <el-col :span="20">
+                <el-date-picker
+                  v-model="add.formData['startDate']"
+                  type="date"
+                  placeholder="选择日期"
+                  style="width: 100%"
+                />
+              </el-col>
+            </el-form-item>
+            <el-form-item key="endDate" label="终止日期" prop="endDate">
+              <el-col :span="20">
+                <el-date-picker
+                  v-model="add.formData['endDate']"
+                  type="date"
+                  placeholder="选择日期"
+                  style="width: 100%"
+                />
+              </el-col>
+            </el-form-item>
+            <el-form-item key="commisionRate" label="佣金率(%)" prop="commisionRate">
+              <el-col :span="20">
+                <el-input-number
+                  v-model="add.formData['commisionRate']"
+                  :min="0"
+                  :max="100"
+                  style="width: 100%"
+                />
+              </el-col>
+            </el-form-item>
+            <el-form-item key="isAvailable" label="状态" prop="isAvailable">
+              <el-col :span="20">
+                <im-select
+                  :source="addisAvailableSource"
+                  url=""
+                  @select-change="(val) => $set(add.formData, 'isAvailable', val)"
+                  style="width: 100%"
+                />
+              </el-col>
+            </el-form-item>
+            <el-form-item key="remark" label="说明" prop="remark">
+              <el-col :span="20">
+                <el-input
+                  v-model="add.formData['remark']"
+                  type="textarea"
+                  style="width: 100%"
+                />
+              </el-col>
+            </el-form-item>
+          </el-form>
+        </el-scrollbar>
         <div slot="footer" class="dialog-footer">
           <el-button @click.native="add.visible = false; $refs['addForm'].resetFields();">取消</el-button>
           <el-button type="primary" @click.native="formDialogSubmit('add')">提交</el-button>
@@ -232,53 +293,111 @@
         v-el-drag-dialog
         :visible.sync="edit.visible"
         :close-on-click-modal="false"
+        top="10vh"
         title="编辑"
         @close="handleDialogClose('edit', 'editForm')"
       >
-        <el-form
-          ref="editForm"
-          :model="edit.formData"
-          :rules="edit.formRules"
-          label-width="80px"
+        <el-scrollbar
+          tag="div"
+          class="is-empty"
+          wrap-class="el-select-dropdown__wrap"
+          view-class="el-select-dropdown__list"
         >
-          <el-form-item key="dealerCode" label="经销商" prop="dealerCode">
-          </el-form-item>
-          <el-form-item key="insuredType" label="业务类型" prop="insuredType">
-          </el-form-item>
-          <el-form-item key="companyCode" label="保险公司" prop="companyCode">
-          </el-form-item>
-          <el-form-item key="insuranceType" label="险种类型" prop="insuranceType">
-          </el-form-item>
-          <el-form-item key="startDate" label="生效日期" prop="startDate">
-            <el-date-picker
-              v-model="edit.formData['startDate']"
-              type="date"
-              placeholder="选择日期"
-            />
-          </el-form-item>
-          <el-form-item key="endDate" label="终止日期" prop="endDate">
-            <el-date-picker
-              v-model="edit.formData['endDate']"
-              type="date"
-              placeholder="选择日期"
-            />
-          </el-form-item>
-          <el-form-item key="commisionRate" label="佣金率(%)" prop="commisionRate">
-            <el-input-number
-              v-model="edit.formData['commisionRate']"
-              :min="0"
-              :max="100"
-            />
-          </el-form-item>
-          <el-form-item key="isAvailable" label="状态" prop="isAvailable">
-          </el-form-item>
-          <el-form-item key="remark" label="说明" prop="remark">
-            <el-input
-              v-model="edit.formData['remark']"
-              type="textarea"
-            />
-          </el-form-item>
-        </el-form>
+          <el-form
+            ref="editForm"
+            :model="edit.formData"
+            :rules="edit.formRules"
+            label-width="120px"
+          >
+            <el-form-item key="dealerCode" label="经销商" prop="dealerCode">
+              <el-col :span="20">
+                <im-select
+                  url=""
+                  @select-change="(val) => $set(edit.formData, 'dealerCode', val)"
+                  style="width: 100%"
+                />
+              </el-col>
+            </el-form-item>
+            <el-form-item key="insuredType" label="业务类型" prop="insuredType">
+              <el-col :span="20">
+                <im-select
+                  :source="editinsuredTypeSource"
+                  url=""
+                  @select-change="(val) => $set(edit.formData, 'insuredType', val)"
+                  style="width: 100%"
+                />
+              </el-col>
+            </el-form-item>
+            <el-form-item key="companyCode" label="保险公司" prop="companyCode">
+              <el-col :span="20">
+                <im-select
+                  url=""
+                  @select-change="(val) => $set(edit.formData, 'companyCode', val)"
+                  style="width: 100%"
+                />
+              </el-col>
+            </el-form-item>
+            <el-form-item key="insuranceType" label="险种类型" prop="insuranceType">
+              <el-col :span="20">
+                <im-select
+                  :source="editinsuranceTypeSource"
+                  url=""
+                  @select-change="(val) => $set(edit.formData, 'insuranceType', val)"
+                  style="width: 100%"
+                />
+              </el-col>
+            </el-form-item>
+            <el-form-item key="startDate" label="生效日期" prop="startDate">
+              <el-col :span="20">
+                <el-date-picker
+                  v-model="edit.formData['startDate']"
+                  type="date"
+                  placeholder="选择日期"
+                  style="width: 100%"
+                />
+              </el-col>
+            </el-form-item>
+            <el-form-item key="endDate" label="终止日期" prop="endDate">
+              <el-col :span="20">
+                <el-date-picker
+                  v-model="edit.formData['endDate']"
+                  type="date"
+                  placeholder="选择日期"
+                  style="width: 100%"
+                />
+              </el-col>
+            </el-form-item>
+            <el-form-item key="commisionRate" label="佣金率(%)" prop="commisionRate">
+              <el-col :span="20">
+                <el-input-number
+                  v-model="edit.formData['commisionRate']"
+                  :min="0"
+                  :max="100"
+                  style="width: 100%"
+                />
+              </el-col>
+            </el-form-item>
+            <el-form-item key="isAvailable" label="状态" prop="isAvailable">
+              <el-col :span="20">
+                <im-select
+                  :source="editisAvailableSource"
+                  url=""
+                  @select-change="(val) => $set(edit.formData, 'isAvailable', val)"
+                  style="width: 100%"
+                />
+              </el-col>
+            </el-form-item>
+            <el-form-item key="remark" label="说明" prop="remark">
+              <el-col :span="20">
+                <el-input
+                  v-model="edit.formData['remark']"
+                  type="textarea"
+                  style="width: 100%"
+                />
+              </el-col>
+            </el-form-item>
+          </el-form>
+        </el-scrollbar>
         <div slot="footer" class="dialog-footer">
           <el-button @click.native="edit.visible = false; $refs['editForm'].resetFields();">取消</el-button>
           <el-button type="primary" @click.native="formDialogSubmit('edit')">提交</el-button>
@@ -326,8 +445,17 @@ export default {
       blankSpace: '',
       // 遍历所有存储的数据
       // 
-      add: {"confirmUrl":"/carins/commission/add","visible":false,"formData":{},"formRules":{"dealerCode":[{"required":true,"message":"请选择经销商","trigger":"blur"}],"insuredType":[{"required":true,"message":"请选择业务类型","trigger":"blur"}],"companyName":[{"required":true,"message":"请选择保险公司","trigger":"blur"}],"insuranceType":[{"required":true,"message":"请选择险种类型","trigger":"blur"}],"commisionRate":[{"required":true,"message":"佣金率(%)","trigger":"blur"}],"startDate":[{"required":true,"message":"请选择生效日期","trigger":"blur"}],"endDate":[{"required":true,"message":"请选择终止日期","trigger":"blur"}],"isAvailable":[{"required":true,"message":"请选择状态","trigger":"blur"}]}},
-      edit: {"confirmUrl":"/carins/commission/edit","visible":false,"formData":{},"formRules":{"dealerCode":[{"required":true,"message":"请选择经销商","trigger":"blur"}],"insuredType":[{"required":true,"message":"请选择业务类型","trigger":"blur"}],"companyName":[{"required":true,"message":"请选择保险公司","trigger":"blur"}],"insuranceType":[{"required":true,"message":"请选择险种类型","trigger":"blur"}],"commisionRate":[{"required":true,"message":"佣金率(%)","trigger":"blur"}],"startDate":[{"required":true,"message":"请选择生效日期","trigger":"blur"}],"endDate":[{"required":true,"message":"请选择终止日期","trigger":"blur"}],"isAvailable":[{"required":true,"message":"请选择状态","trigger":"blur"}]}},
+      insuredTypeSource: [{"label":"全部","value":""},{"label":"新保","value":"INS_NEW"},{"label":"续保","value":"INS_RENEWAL"}],
+      insuranceTypeSource: [{"label":"请选择","value":""},{"label":"交强险","value":"compulsory"},{"label":"商业险","value":"commercial"}],
+      isAvailableSource: [{"label":"启用","value":"1"},{"label":"停用","value":"0"}],
+      add: {"confirmUrl":"/carins/commission/add","visible":false,"formData":{},"formRules":{"dealerCode":[{"required":true,"message":"请选择经销商","trigger":"blur"}],"insuredType":[{"required":true,"message":"请选择业务类型","trigger":"blur"}],"companyName":[{"required":true,"message":"请选择保险公司","trigger":"blur"}],"insuranceType":[{"required":true,"message":"请选择险种类型","trigger":"blur"}],"commisionRate":[{"required":true,"message":"请输入佣金率(%)","trigger":"blur"}],"startDate":[{"required":true,"message":"请选择生效日期","trigger":"blur"}],"endDate":[{"required":true,"message":"请选择终止日期","trigger":"blur"}],"isAvailable":[{"required":true,"message":"请选择状态","trigger":"blur"}]}},
+      addinsuredTypeSource: [{"label":"全部","value":""},{"label":"新保","value":"INS_NEW"},{"label":"续保","value":"INS_RENEWAL"}],
+      addinsuranceTypeSource: [{"label":"请选择","value":""},{"label":"交强险","value":"compulsory"},{"label":"商业险","value":"commercial"}],
+      addisAvailableSource: [{"label":"启用","value":"1"},{"label":"停用","value":"0"}],
+      edit: {"confirmUrl":"/carins/commission/edit","visible":false,"formData":{},"formRules":{"dealerCode":[{"required":true,"message":"请选择经销商","trigger":"blur"}],"insuredType":[{"required":true,"message":"请选择业务类型","trigger":"blur"}],"companyName":[{"required":true,"message":"请选择保险公司","trigger":"blur"}],"insuranceType":[{"required":true,"message":"请选择险种类型","trigger":"blur"}],"commisionRate":[{"required":true,"message":"请输入佣金率(%)","trigger":"blur"}],"startDate":[{"required":true,"message":"请选择生效日期","trigger":"blur"}],"endDate":[{"required":true,"message":"请选择终止日期","trigger":"blur"}],"isAvailable":[{"required":true,"message":"请选择状态","trigger":"blur"}]}},
+      editinsuredTypeSource: [{"label":"全部","value":""},{"label":"新保","value":"INS_NEW"},{"label":"续保","value":"INS_RENEWAL"}],
+      editinsuranceTypeSource: [{"label":"请选择","value":""},{"label":"交强险","value":"compulsory"},{"label":"商业险","value":"commercial"}],
+      editisAvailableSource: [{"label":"启用","value":"1"},{"label":"停用","value":"0"}],
       // 列表默认展开的keys
       expandRowKeys: [],
       childColumnWidth: 4,
@@ -562,6 +690,16 @@ export default {
 .mini-btn-style {
   /deep/ span {
     margin-left: 0px;
+  }
+}
+.el-scrollbar__view {
+  .el-form {
+    margin-right: 10px;
+  }
+}
+/deep/ .el-scrollbar{
+  .el-select-dropdown__wrap.el-scrollbar__wrap {
+    max-height: 350px;
   }
 }
 </style>

@@ -1,10 +1,10 @@
 const template = require('art-template')
 const fs = require('fs')
 const path = require('path')
-const tablePageConfig = require('./src/data/page.js')
+const tablePageConfig = require('./src/data/carins.js')
 
 // Table模板路径
-const tableTemplateFile = '/src/template/pages/Page.art'
+const tableTemplateFile = '/src/template/pages/Carins.art'
 
 // admin中views的根目录
 // const destViewPath = path.join(__dirname, '../admin/src/views/')
@@ -47,9 +47,13 @@ template.defaults.imports.cacheKeyProps = ((key, value, append) => {
         return value
       }
     }
+    console.log('not append: ')
+    console.log(value)
     cachedKeyProps[key] = JSON.stringify(value)
     return value
   } else {
+    console.log('other: ')
+    console.log(value)
     return cachedKeyProps[key]
   }
 })
@@ -63,7 +67,7 @@ function run() {
   let result = template(__dirname + tableTemplateFile, tablePageConfig)
   result = minify(result)
   // 输出临时
-  move2Temp(result, 'Page.vue')
+  move2Temp(result, 'Cartins.vue')
   // 输出admin中
   // move2Views(result, 'index2.vue')
 }
