@@ -134,6 +134,10 @@
       <% var column = pageData.table.columns[i] %>
       <el-table-column
         key="<%= column.field %>"
+        <% if (column.formatter) {%>
+        <% $imports.cacheKeyProps(column.field + 'Source', column.formatter) %>
+        :formatter="(row, column, cellValue, index) => handleTableColumnFormatter(row, column, cellValue, index, '<%= column.field %>Source')"
+        <% } %>
         prop="<%= column.field %>"
         label="<%= column.title %>"
         header-align="center"
@@ -174,6 +178,13 @@
               icon="<%= action.icon ? action.icon : '' %>"
               class="<%= action.mini ? 'mini-btn-style' : '' %>"
               @click.stop="handleDelete(scope.$index, scope.row, '<%= action.name %>', '<%= action.dialog.confirmUrl %>')"
+            ><%= action.mini ? '' : action.title %></el-button>
+            <% } else if (action.type == 'confirm') { %>
+            <el-button
+              type="<%= action.theme ? action.theme : '' %>"
+              icon="<%= action.icon ? action.icon : '' %>"
+              class="<%= action.mini ? 'mini-btn-style' : '' %>"
+              @click.stop="handleConfirm(scope.$index, scope.row, '<%= action.name %>', '<%= action.dialog.confirmUrl %>', '<%= action.title %>')"
             ><%= action.mini ? '' : action.title %></el-button>
             <% } %>
           </span>
@@ -527,6 +538,21 @@ export default {
         // cancel
       })
     },
+    handleConfirm(index, row, type, url, name) {
+      this.$confirm('确认'+name+'该记录吗？', '提示', {
+        type: 'warning'
+      }).then(() => {
+        commonAPI.Post(url, { id: row.id }).then(res => {
+          this.$message({
+            type: 'success',
+            message: name + '成功'
+          })
+          this.load()
+        })
+      }).catch(() => {
+        // cancel
+      })
+    },
     // 批量删除
     batchDelete(url) {
       const ids = this.multipleSelection.map(item => item.id).toString()
@@ -649,6 +675,17 @@ export default {
         if (typeof this.$refs[ref].close === 'function') {
           this.$refs[ref].close()
         }
+      }
+    }, 
+    handleTableColumnFormatter(row, column, cellValue, index, type) {
+      const allValues = this[type]
+      if (allValues && allValues.length > 0) {
+        for (let i = 0; i < allValues.length; i++) {
+          if (cellValue === allValues[i].value) {
+            return allValues[i].label
+          }
+        }
+
       }
     }
   }

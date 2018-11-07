@@ -90,6 +90,7 @@
       />
       <el-table-column
         key="insuredType"
+        :formatter="(row, column, cellValue, index) => handleTableColumnFormatter(row, column, cellValue, index, 'insuredTypeSource')"
         prop="insuredType"
         label="业务类型"
         header-align="center"
@@ -104,6 +105,7 @@
       />
       <el-table-column
         key="insuranceType"
+        :formatter="(row, column, cellValue, index) => handleTableColumnFormatter(row, column, cellValue, index, 'insuranceTypeSource')"
         prop="insuranceType"
         label="险种类型"
         header-align="center"
@@ -153,6 +155,14 @@
               icon="el-icon-delete"
               class="mini-btn-style"
               @click.stop="handleDelete(scope.$index, scope.row, 'delete', '/carins/commission/delete')"
+            ></el-button>
+          </span>
+          <span key="deactivate" style="padding-left: 5px;">
+            <el-button
+              type="danger"
+              icon="el-icon-delete"
+              class="mini-btn-style"
+              @click.stop="handleConfirm(scope.$index, scope.row, 'deactivate', '/carins/commission/deactivate', '停用')"
             ></el-button>
           </span>
         </template>
@@ -541,6 +551,21 @@ export default {
         // cancel
       })
     },
+    handleConfirm(index, row, type, url, name) {
+      this.$confirm('确认'+name+'该记录吗？', '提示', {
+        type: 'warning'
+      }).then(() => {
+        commonAPI.Post(url, { id: row.id }).then(res => {
+          this.$message({
+            type: 'success',
+            message: name + '成功'
+          })
+          this.load()
+        })
+      }).catch(() => {
+        // cancel
+      })
+    },
     // 批量删除
     batchDelete(url) {
       const ids = this.multipleSelection.map(item => item.id).toString()
@@ -659,6 +684,16 @@ export default {
         if (action.linkId) action.linkId = null
         if (typeof this.$refs[ref].close === 'function') {
           this.$refs[ref].close()
+        }
+      }
+    }, 
+    handleTableColumnFormatter(row, column, cellValue, index, type) {
+      const allValues = this[type]
+      if (allValues && allValues.length > 0) {
+        for (let i = 0; i < allValues.length; i++) {
+          if (cellValue === allValues[i].value) {
+            return allValues[i].label
+          }
         }
       }
     }

@@ -77,13 +77,39 @@ module.exports = {
         title: '经销商'
       }, {
         field: 'insuredType', 
-        title: '业务类型'
+        title: '业务类型', 
+        formatter: [
+          {
+            label: '全部', 
+            value: ''
+          }, 
+          {
+            label: '新保',
+            value: 'INS_NEW'
+          }, 
+          {
+            label: '续保', 
+            value: 'INS_RENEWAL'
+          }
+        ]
       }, {
         field: 'companyName', 
         title: '保险公司'
       },{
         field: 'insuranceType', 
-        title: '险种类型'
+        title: '险种类型', 
+        formatter: [
+          {
+            label: '请选择',
+            value: ''
+          }, {
+            label: '交强险',
+            value: 'compulsory'
+          }, {
+            label: '商业险', 
+            value: 'commercial'
+          }
+        ]
       },{
         field: 'commisionRate', 
         title: '佣金率(%)'
@@ -391,6 +417,18 @@ module.exports = {
       dialog: {
         listUrl: '',
         confirmUrl: '/carins/commission/delete'
+      }
+    }, {
+      name: 'deactivate',
+      title: '停用',
+      type: 'confirm',
+      theme: 'danger',
+      icon: 'el-icon-delete',
+      mini: true,
+      place: 'tableCell',
+      dialog: {
+        listUrl: '',
+        confirmUrl: '/carins/commission/deactivate'
       }
     }]
   }
