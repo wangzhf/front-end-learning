@@ -1,10 +1,13 @@
 const template = require('art-template')
 const fs = require('fs')
 const path = require('path')
-const tablePageConfig = require('./src/data/carins.js')
+
+const target = 'Form'
+
+const tablePageConfig = require('./src/data/' + target + '.js')
 
 // Table模板路径
-const tableTemplateFile = '/src/template/pages/Carins.art'
+const tableTemplateFile = '/src/template/pages/' + target + '.art'
 
 // admin中views的根目录
 // const destViewPath = path.join(__dirname, '../admin/src/views/')
@@ -67,7 +70,7 @@ function run() {
   let result = template(__dirname + tableTemplateFile, tablePageConfig)
   result = minify(result)
   // 输出临时
-  move2Temp(result, 'Cartins.vue')
+  move2Temp(result, target + '.vue')
   // 输出admin中
   // move2Views(result, 'index2.vue')
 }
