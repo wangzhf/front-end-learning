@@ -41,13 +41,13 @@ module.exports = {
         {
           field: 'signStartDate', 
           title: '签单开始时间', 
-          span: 16,
+          span: 8,
           type: 'date'
         },
         {
           field: 'signEndDate', 
           title: '签单结束时间', 
-          span: 16,
+          span: 8,
           type: 'date'
         }
       ]
