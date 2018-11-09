@@ -2,19 +2,50 @@ const template = require('art-template')
 const fs = require('fs')
 const path = require('path')
 
-const target = 'Form'
+var program = require('commander')
 
-const tablePageConfig = require('./src/data/' + target + '.js')
+program
+  .version('0.1.0')
+  .option('-g, --generate [value]', 'generate the file')
+  .parse(process.argv)
+
+if (!program.generate) {
+  console.log('No args found, will returned')
+  console.log('Usage: ')
+  console.log('   node index.js -g [paris-key]')
+  return 
+} 
+
+const pairs = {
+  commission: {
+    source: 'Commission', 
+    target: 'Commission'
+  }, 
+  endorsement: {
+    source: 'Endorsement', 
+    target: 'Endorsement'
+  }, 
+  balance: {
+    source: 'AccountStatement', 
+    target: 'AccountStatement'
+  }
+}
+
+const target = pairs[program.generate]
+
+// 输出的临时目录
+let tempDir = path.join(__dirname, '/src/temp/')
+tempDir = 'D:\\workspace\\work\\car-ins\\src\\views\\service\\carins\\commissions'
+
+const tablePageConfig = require('./src/data/' + target.source + '.js')
 
 // Table模板路径
-const tableTemplateFile = '/src/template/pages/' + target + '.art'
+const tableTemplateFile = '/src/template/pages/' + target.source + '.art'
 
 // admin中views的根目录
 // const destViewPath = path.join(__dirname, '../admin/src/views/')
 const destViewPath = path.join(__dirname, './src/views/')
 
-// 输出的临时目录
-const tempDir = path.join(__dirname, '/src/temp/')
 
 // router-view文件路径
 const routerViewPath = path.join(__dirname, '/src/template/RouterView.art')
@@ -50,13 +81,13 @@ template.defaults.imports.cacheKeyProps = ((key, value, append) => {
         return value
       }
     }
-    console.log('not append: ')
-    console.log(value)
+    // console.log('not append: ')
+    // console.log(value)
     cachedKeyProps[key] = JSON.stringify(value)
     return value
   } else {
-    console.log('other: ')
-    console.log(value)
+    // console.log('other: ')
+    // console.log(value)
     return cachedKeyProps[key]
   }
 })
@@ -70,7 +101,7 @@ function run() {
   let result = template(__dirname + tableTemplateFile, tablePageConfig)
   result = minify(result)
   // 输出临时
-  move2Temp(result, target + '.vue')
+  move2Temp(result, target.target + '.vue')
   // 输出admin中
   // move2Views(result, 'index2.vue')
 }
@@ -124,6 +155,7 @@ function handleRouterView(dest) {
  * 暂时放到临时目录下
  */
 function move2Temp(destStr, fileName) {
+  console.log(tempDir + '/' + fileName)
   fs.writeFile(tempDir + '/' + fileName, destStr, err => {
     if (err) 
       console.log('write ' + fileName + ' error.')

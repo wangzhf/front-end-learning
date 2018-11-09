@@ -8,12 +8,16 @@ module.exports = {
     searchArea: {
       url: '/carins/commission/list',
       columns: [{
-          field: 'dealerCode',
-          title: '经销商',
-          type: 'select'
+          field: 'dealerId',
+          title: '机构/经销商',
+          type: 'selectTree'
         },
         {
-          field: 'insuredType', 
+          field: 'companyCode',
+          title: '保险公司', 
+          type: 'select'
+        },{
+          field: 'businessType', 
           title: '业务类型',
           type: 'select', 
           source: [
@@ -32,13 +36,23 @@ module.exports = {
           ]
         },
         {
-          field: 'companyCode',
-          title: '保险公司', 
-          type: 'select'
-        },
+          field: 'insuranceCategory',
+          title: '险类',
+          type: 'select',
+          source: [
+            {
+              label: '请选择',
+              value: ''
+            }, 
+            {
+              label: '车险', 
+              value: 'carins'
+            }
+          ]
+        }, 
         {
-          field: 'insuranceType',
-          title: '险种类型', 
+          field: 'insuranceKind',
+          title: '险种', 
           type: 'select',
           source: [
             {
@@ -74,10 +88,17 @@ module.exports = {
     table: {
       columns: [{
         field: 'dealerName', 
-        title: '经销商'
-      }, {
-        field: 'insuredType', 
-        title: '业务类型', 
+        title: '经销商', 
+        width: '200'
+      }, 
+      {
+        field: 'companyName', 
+        title: '保险公司', 
+        width: '100'
+      },
+      {
+        field: 'businessType', 
+        title: '业务类型',
         formatter: [
           {
             label: '全部', 
@@ -91,13 +112,25 @@ module.exports = {
             label: '续保', 
             value: 'INS_RENEWAL'
           }
-        ]
+        ], 
+        width: '100'
+      },
+      {
+        field: 'insuranceCategory', 
+        title: '险类', 
+        formatter: [
+          {
+            label: '请选择',
+            value: ''
+          }, {
+            label: '车险', 
+            value: 'carins'
+          }
+        ], 
+        width: '100'
       }, {
-        field: 'companyName', 
-        title: '保险公司'
-      },{
-        field: 'insuranceType', 
-        title: '险种类型', 
+        field: 'insuranceKind', 
+        title: '险种', 
         formatter: [
           {
             label: '请选择',
@@ -109,19 +142,35 @@ module.exports = {
             label: '商业险', 
             value: 'commercial'
           }
-        ]
-      },{
+        ], 
+        width: '100'
+      }, 
+      {
         field: 'commisionRate', 
-        title: '佣金率(%)'
-      },{
+        title: '佣金率(%)', 
+        width: '100'
+      },
+      {
         field: 'startDate', 
-        title: '生效日期'
+        title: '生效日期', 
+        width: '100'
       },{
         field: 'endDate', 
-        title: '终止日期'
+        title: '终止日期', 
+        width: '100'
       },{
         field: 'isAvailable', 
-        title: '状态'
+        title: '状态', 
+        formatter: [
+          {
+            label: '启用', 
+            value: '1'
+          }, {
+            label: '停用', 
+            value: '0'
+          }
+        ], 
+        width: '100'
       }]
     },
 
@@ -189,12 +238,17 @@ module.exports = {
             trigger: 'blur'
           }]
         },
-        columns: [{
+        columns: [
+        {
           field: 'dealerCode', 
           title: '经销商', 
+          type: 'selectTree'
+        }, {
+          field: 'companyCode', 
+          title: '保险公司', 
           type: 'select'
         }, {
-          field: 'insuredType', 
+          field: 'businessType', 
           title: '业务类型', 
           type: 'select', 
           source: [
@@ -212,12 +266,22 @@ module.exports = {
             }
           ]
         }, {
-          field: 'companyCode', 
-          title: '保险公司', 
-          type: 'select'
+          field: 'insuranceCategory',
+          title: '险类',
+          type: 'select',
+          source: [
+            {
+              label: '请选择',
+              value: ''
+            }, 
+            {
+              label: '车险', 
+              value: 'carins'
+            }
+          ]
         }, {
-          field: 'insuranceType', 
-          title: '险种类型', 
+          field: 'insuranceKind', 
+          title: '险种', 
           type: 'select',
           source: [
             {
@@ -270,7 +334,7 @@ module.exports = {
       name: 'edit',
       title: '编辑',
       type: 'editDialog',
-      theme: 'primary',
+      theme: 'text',
       icon: 'el-icon-edit',
       mini: true,
       place: 'tableCell',
@@ -329,12 +393,17 @@ module.exports = {
             trigger: 'blur'
           }]
         },
-        columns: [{
+        columns: [
+        {
           field: 'dealerCode', 
           title: '经销商', 
+          type: 'selectTree'
+        }, {
+          field: 'companyCode', 
+          title: '保险公司', 
           type: 'select'
         }, {
-          field: 'insuredType', 
+          field: 'businessType', 
           title: '业务类型', 
           type: 'select', 
           source: [
@@ -352,12 +421,22 @@ module.exports = {
             }
           ]
         }, {
-          field: 'companyCode', 
-          title: '保险公司', 
-          type: 'select'
+          field: 'insuranceCategory',
+          title: '险类',
+          type: 'select',
+          source: [
+            {
+              label: '请选择',
+              value: ''
+            }, 
+            {
+              label: '车险', 
+              value: 'carins'
+            }
+          ]
         }, {
-          field: 'insuranceType', 
-          title: '险种类型', 
+          field: 'insuranceKind', 
+          title: '险种', 
           type: 'select',
           source: [
             {
@@ -410,7 +489,7 @@ module.exports = {
       name: 'delete',
       title: '删除',
       type: 'deleteConfirm',
-      theme: 'danger',
+      theme: 'text',
       icon: 'el-icon-delete',
       mini: true,
       place: 'tableCell',
@@ -422,8 +501,8 @@ module.exports = {
       name: 'deactivate',
       title: '停用',
       type: 'confirm',
-      theme: 'danger',
-      icon: 'el-icon-delete',
+      theme: 'text',
+      icon: 'el-icon-fa-stop-circle',
       mini: true,
       place: 'tableCell',
       dialog: {

@@ -4,13 +4,13 @@
     <el-row>
       <% if (pageData && pageData.searchArea && pageData.searchArea.columns && pageData.searchArea.columns.length > 0) { %>
       <% var searchColumns = pageData.searchArea.columns %>
-      <el-form ref="searchForm" :inline="true" label-width="80px">
+      <el-form ref="searchForm" label-width="<%= pageData.searchArea.labelWidth ? pageData.searchArea.labelWidth : '100px' %>">
         <% for (var i = 0; i < searchColumns.length; i++) { %>
         <% var searchItem = searchColumns[i] %>
-        <el-col key="<%= searchItem.field %>" :span="8">
+        <el-col key="<%= searchItem.field %>" :span="<%= searchItem.span ? searchItem.span : 8 %>">
           <el-form-item label="<%= searchItem.title %>">
             <% if (searchItem.type == 'input') { %>
-            <el-input v-model.trim="searchForm['<%= searchItem.field %>']" clearable />
+            <el-input v-model.trim="searchForm['<%= searchItem.field %>']" style="width: 100%;" clearable />
             <% } else if (searchItem.type == 'select') { %>
             <% if (searchItem.dependon) { %>
             <im-select
@@ -25,6 +25,7 @@
               :source="<%= searchItem.field %>Source"
               <% } %>
               url="<%= searchItem.url %>"
+              style="width: 100%;"
               @select-change="(val) => $set(searchForm, '<%= searchItem.field %>', val)"
             />
             <% } else { %>
@@ -38,27 +39,50 @@
               :source="<%= searchItem.field %>Source"
               <% } %>
               url="<%= searchItem.url %>"
+              style="width: 100%;"
               @select-change="(val) => $set(searchForm, '<%= searchItem.field %>', val)"
             />
             <% } %>
             <% } else if (searchItem.type == 'selectTree') { %>
             <im-el-select-tree
               url="<%= searchItem.url %>"
+              style="width: 100%;"
               @select-change="(val) => $set(searchForm, '<%= searchItem.field %>', val)"
             />
+            <% } else if(searchItem.type == 'startEndDate') { %>
+            <el-date-picker
+              v-model="searchForm['<%= searchItem.field %>']"
+              style="width: 100%;"
+              type="daterange"
+              range-separator="至"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期">
+            </el-date-picker>
+            <% } else if(searchItem.type == 'date') { %>
+            <el-date-picker
+              v-model="searchForm['<%= searchItem.field %>']"
+              type="date"
+              style="width: 100%;"
+              placeholder="<%= searchItem.placeholder ? searchItem.placeholder : '选择日期' %>">
+            </el-date-picker>
             <% } %>
           </el-form-item>
         </el-col>
         <% } %>
+        <!--
         <el-col :span="8">
           <el-button :loading="searchLoading" type="primary" icon="el-icon-search" @click="handleSearch">查询</el-button>
         </el-col>
+        -->
       </el-form>
       <% } %>
     </el-row>
     <el-col :span="24">
-      <% if(pageData && pageData.actions && pageData.actions.length > 0) { %>
       <el-button-group>
+        <span>
+          <el-button :loading="searchLoading" type="primary" icon="el-icon-search" @click="handleSearch">查询</el-button>
+        </span>
+      <% if(pageData && pageData.actions && pageData.actions.length > 0) { %>
         <% for(var i = 0; i < pageData.actions.length; i++) { %>
         <% var action = pageData.actions[i] %>
         <% if (action.place == 'toolbar') { %>
@@ -91,8 +115,8 @@
         <span>
           <el-button v-if="needExpand" :icon="expandBtn.icon" type="primary" @click="handleChildExpand">{{ expandBtn.text }}</el-button>
         </span>
-      </el-button-group>
       <% } %>
+      </el-button-group>
     </el-col>
 
     <el-table
@@ -140,12 +164,15 @@
         <% } %>
         prop="<%= column.field %>"
         label="<%= column.title %>"
+        <% if (column.width) { %>
+        width="<%= column.width %>"
+        <% } %>
         header-align="center"
         sortable
       />
       <% } %>
       <% if(pageData && pageData.actions && pageData.actions.length > 0) { %>
-      <el-table-column align="center" label="操作" >
+      <el-table-column align="center" fixed="right" width="100" label="操作" >
         <template slot-scope="scope">
           <% for(var i = 0; i < pageData.actions.length; i++) { %>
           <% var action = pageData.actions[i] %>
@@ -327,6 +354,14 @@
                 />
               </el-col>
               <% } %>
+              <% } else if (item.type == 'selectTree') { %>
+              <el-col :span="20">
+                <im-el-select-tree
+                  url="<%= item.url %>"
+                  style="width: 100%"
+                  @select-change="(val) => $set(<%= action.name %>.formData, '<%= item.field %>', val)"
+                />
+              </el-col>
               <% } %>
             </el-form-item>
             <% } %>
